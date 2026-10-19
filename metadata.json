@@ -1,0 +1,6 @@
+{
+  "name": "Nextar Bread Bakery ERP",
+  "description": "Production, Inventory, Procurement, Sales, Marketer, Dispatch, Cashier Reconciliation and Financial DBMS/ERP for Nextar Bread Bakery (Kubwa, Abuja, Nigeria).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
