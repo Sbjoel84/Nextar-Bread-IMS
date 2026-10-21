@@ -28,7 +28,7 @@ export const CashierView: React.FC<CashierViewProps> = ({
   const [closingSession, setClosingSession] = useState<CashierSession | null>(null);
 
   // Open Form
-  const [openingFloat, setOpeningFloat] = useState(50000);
+  const [openingFloat, setOpeningFloat] = useState(0);
   const [shift, setShift] = useState<'MORNING' | 'EVENING'>('MORNING');
 
   // Close Form

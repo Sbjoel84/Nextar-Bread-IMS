@@ -32,12 +32,12 @@ export const DispatchesView: React.FC<DispatchesViewProps> = ({
   const [reconcilingDispatch, setReconcilingDispatch] = useState<DispatchSheet | null>(null);
 
   // Form State
-  const [driverName, setDriverName] = useState('Kabir Usman');
-  const [vehiclePlate, setVehiclePlate] = useState('KJA-782-XR (Toyota HiAce)');
+  const [driverName, setDriverName] = useState('');
+  const [vehiclePlate, setVehiclePlate] = useState('');
   const [selectedMarketerId, setSelectedMarketerId] = useState(marketers[0]?.id || '');
-  const [route, setRoute] = useState('Kubwa Central & Phase 4');
+  const [route, setRoute] = useState('');
   const [selectedProductId, setSelectedProductId] = useState(products[0]?.id || '');
-  const [quantityLoaded, setQuantityLoaded] = useState(400);
+  const [quantityLoaded, setQuantityLoaded] = useState(0);
 
   // Reconcile Form State
   const [deliveredLoaves, setDeliveredLoaves] = useState(0);
@@ -171,10 +171,10 @@ export const DispatchesView: React.FC<DispatchesViewProps> = ({
                       <button
                         onClick={() => {
                           setReconcilingDispatch(dsp);
-                          setDeliveredLoaves(dsp.totalLoavesLoaded - 5);
-                          setReturnedLoaves(5);
-                          setCashCollected(250000);
-                          setTransferCollected(150000);
+                          setDeliveredLoaves(dsp.totalLoavesLoaded);
+                          setReturnedLoaves(0);
+                          setCashCollected(0);
+                          setTransferCollected(0);
                         }}
                         className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold"
                       >

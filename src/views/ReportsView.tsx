@@ -10,8 +10,11 @@ import {
   BreadReturnRecord,
   CashierSession,
   PaymentReceipt,
+  OperatingExpense,
 } from '../types/erp';
 import { formatNaira, formatDateNG, downloadCSV } from '../utils/formatters';
+import { SalesRevenueTrendChart } from '../components/SalesRevenueTrendChart';
+import { MonthlyProfitSummary } from '../components/MonthlyProfitSummary';
 import {
   BarChart3,
   Download,
@@ -37,6 +40,7 @@ interface ReportsViewProps {
   returns: BreadReturnRecord[];
   cashierSessions: CashierSession[];
   payments: PaymentReceipt[];
+  expenses: OperatingExpense[];
 }
 
 export const ReportsView: React.FC<ReportsViewProps> = ({
@@ -50,6 +54,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
   returns,
   cashierSessions,
   payments,
+  expenses,
 }) => {
   const [reportType, setReportType] = useState<
     'production' | 'inventory' | 'sales' | 'marketers' | 'debtors' | 'dispatches' | 'returns' | 'cashier'
@@ -191,6 +196,10 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
           <span>Export Current Report (CSV)</span>
         </button>
       </div>
+
+      <SalesRevenueTrendChart invoices={invoices} />
+
+      <MonthlyProfitSummary invoices={invoices} expenses={expenses} />
 
       {/* Report Selector Pills */}
       <div className="flex flex-wrap gap-2 text-xs">

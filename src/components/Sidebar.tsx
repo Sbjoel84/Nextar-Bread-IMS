@@ -21,8 +21,11 @@ import {
   History,
   Sliders,
   ChevronDown,
+  ShieldCheck,
+  KeyRound,
 } from 'lucide-react';
-import { UserRole } from '../types/erp';
+import { User } from '../types/erp';
+import { canOpenPage } from '../shared/permissions';
 
 export type NavTab =
   | 'dashboard'
@@ -44,12 +47,15 @@ export type NavTab =
   | 'employees'
   | 'reports'
   | 'audit-logs'
-  | 'settings';
+  | 'settings'
+  | 'admin'
+  | 'my-access';
 
 interface SidebarProps {
   currentTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
-  userRole?: UserRole;
+  currentUser: User | null;
+  pendingAccessRequests?: number; // shown on Admin Panel for approvers
   collapsed?: boolean;
 }
 
@@ -91,10 +97,16 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'reports', label: 'Reports & Analytics', icon: BarChart3, section: 'Finance & Governance' },
   { id: 'audit-logs', label: 'Immutable Audit Log', icon: History, section: 'System & Governance' },
   { id: 'settings', label: 'Bakery Settings', icon: Sliders, section: 'System & Governance' },
+  { id: 'admin', label: 'Admin Panel', icon: ShieldCheck, section: 'System & Governance' },
+  { id: 'my-access', label: 'My Access', icon: KeyRound, section: 'System & Governance' },
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => {
-  const sections = Array.from(new Set(NAV_ITEMS.map(i => i.section)));
+// Pages this user can open, in sidebar order
+export const allowedTabs = (user: User | null): NavTab[] => NAV_ITEMS.filter(i => canOpenPage(user, i.id)).map(i => i.id);
+
+export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, currentUser, pendingAccessRequests = 0 }) => {
+  const visibleItems = NAV_ITEMS.filter(i => canOpenPage(currentUser, i.id));
+  const sections = Array.from(new Set(visibleItems.map(i => i.section)));
   const navRef = useRef<HTMLElement>(null);
   const [canScrollDown, setCanScrollDown] = useState(true);
 
@@ -133,7 +145,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
         style={{ scrollbarGutter: 'stable' }}
       >
         {sections.map(sectionName => {
-          const items = NAV_ITEMS.filter(i => i.section === sectionName);
+          const items = visibleItems.filter(i => i.section === sectionName);
           return (
             <div key={sectionName}>
               <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -155,6 +167,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
                     >
                       <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                       <span className="truncate">{item.label}</span>
+                      {item.id === 'admin' && pendingAccessRequests > 0 && (
+                        <span className="ml-auto text-[10px] font-bold bg-amber-500 text-slate-950 rounded-full px-1.5 py-0.5" title="Pending access requests">
+                          {pendingAccessRequests}
+                        </span>
+                      )}
                     </button>
                   );
                 })}

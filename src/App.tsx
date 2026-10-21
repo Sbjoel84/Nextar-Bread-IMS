@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
-import { Sidebar, NavTab } from './components/Sidebar';
+import { Sidebar, NavTab, allowedTabs } from './components/Sidebar';
+import { DeviceSetup } from './components/DeviceSetup';
+import { AdminPanelView } from './views/AdminPanelView';
+import { MyAccessView } from './views/MyAccessView';
+import { canOpenPage, hasPermission, isSuperAdmin, PERMISSIONS } from './shared/permissions';
 import { DashboardView } from './views/DashboardView';
 import { ProductsView } from './views/ProductsView';
 import { InventoryView } from './views/InventoryView';
@@ -48,48 +52,47 @@ import {
   AuditLogEntry,
   SystemNotification,
   BakerySettings,
+  AccessRequest,
 } from './types/erp';
 import { calculateRawMaterialUsage, InventoryUsageReport } from './utils/inventoryUsage';
-import { initialFullDb, computeInitialMetrics } from './utils/initialState';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
-  const [currentUser, setCurrentUser] = useState<User | null>(initialFullDb.users[0]);
-  const [allUsers, setAllUsers] = useState<User[]>(initialFullDb.users);
-  const [metrics, setMetrics] = useState<DashboardMetrics | null>(computeInitialMetrics());
-  const [products, setProducts] = useState<BreadProduct[]>(initialFullDb.products);
-  const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>(initialFullDb.rawMaterials);
-  const [stockLedger, setStockLedger] = useState<StockMovement[]>(initialFullDb.stockLedger);
-  const [suppliers, setSuppliers] = useState<Supplier[]>(initialFullDb.suppliers);
-  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>(initialFullDb.purchaseOrders);
-  const [goodsReceiptNotes, setGoodsReceiptNotes] = useState<GoodsReceiptNote[]>(initialFullDb.goodsReceiptNotes);
-  const [recipes, setRecipes] = useState<Recipe[]>(initialFullDb.recipes);
-  const [productionOrders, setProductionOrders] = useState<ProductionOrder[]>(initialFullDb.productionOrders);
-  const [qcRecords, setQcRecords] = useState<QualityControlRecord[]>(initialFullDb.qualityControlRecords);
-  const [finishedGoods, setFinishedGoods] = useState<FinishedGoodsItem[]>(initialFullDb.finishedGoods);
-  const [marketers, setMarketers] = useState<Marketer[]>(initialFullDb.marketers);
-  const [customers, setCustomers] = useState<Customer[]>(initialFullDb.customers);
-  const [invoices, setInvoices] = useState<SalesInvoice[]>(initialFullDb.salesInvoices);
-  const [dispatches, setDispatches] = useState<DispatchSheet[]>(initialFullDb.dispatchSheets);
-  const [returns, setReturns] = useState<BreadReturnRecord[]>(initialFullDb.returnRecords);
-  const [cashierSessions, setCashierSessions] = useState<CashierSession[]>(initialFullDb.cashierSessions);
-  const [payments, setPayments] = useState<PaymentReceipt[]>(initialFullDb.payments);
-  const [expenses, setExpenses] = useState<OperatingExpense[]>(initialFullDb.operatingExpenses);
-  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(initialFullDb.journalEntries);
-  const [employees, setEmployees] = useState<Employee[]>(initialFullDb.employees);
-  const [attendance, setAttendance] = useState<AttendanceRecord[]>(initialFullDb.attendanceRecords);
-  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(initialFullDb.auditLogs);
-  const [notifications, setNotifications] = useState<SystemNotification[]>(initialFullDb.notifications);
-  const [settings, setSettings] = useState<BakerySettings | null>(initialFullDb.settings);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [realUser, setRealUser] = useState<User | null>(null);
+  const [accessRequests, setAccessRequests] = useState<AccessRequest[]>([]);
+  const [needsDevice, setNeedsDevice] = useState(false);
+  const [requestPreset, setRequestPreset] = useState<string[]>([]);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [products, setProducts] = useState<BreadProduct[]>([]);
+  const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([]);
+  const [stockLedger, setStockLedger] = useState<StockMovement[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
+  const [goodsReceiptNotes, setGoodsReceiptNotes] = useState<GoodsReceiptNote[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [productionOrders, setProductionOrders] = useState<ProductionOrder[]>([]);
+  const [qcRecords, setQcRecords] = useState<QualityControlRecord[]>([]);
+  const [finishedGoods, setFinishedGoods] = useState<FinishedGoodsItem[]>([]);
+  const [marketers, setMarketers] = useState<Marketer[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [invoices, setInvoices] = useState<SalesInvoice[]>([]);
+  const [dispatches, setDispatches] = useState<DispatchSheet[]>([]);
+  const [returns, setReturns] = useState<BreadReturnRecord[]>([]);
+  const [cashierSessions, setCashierSessions] = useState<CashierSession[]>([]);
+  const [payments, setPayments] = useState<PaymentReceipt[]>([]);
+  const [expenses, setExpenses] = useState<OperatingExpense[]>([]);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
+  const [notifications, setNotifications] = useState<SystemNotification[]>([]);
+  const [settings, setSettings] = useState<BakerySettings | null>(null);
 
-  // Compute initial usage calculation synchronously
-  const initialUsage = calculateRawMaterialUsage(
-    initialFullDb.rawMaterials,
-    initialFullDb.productionOrders,
-    initialFullDb.stockLedger,
-    initialFullDb.settings
-  );
-  const [usageReport, setUsageReport] = useState<InventoryUsageReport | null>(initialUsage);
+  const [usageReport, setUsageReport] = useState<InventoryUsageReport | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [toastMessage, setToastMessage] = useState<{ text: string; type?: 'info' | 'warning' | 'success' } | null>(null);
 
@@ -102,9 +105,21 @@ export default function App() {
   const fetchAllData = async (isInitial = false) => {
     try {
       const res = await fetch('/api/v1/initial-state').then(r => r.json());
+      if (res.code === 'NO_SESSION') {
+        setNeedsDevice(true);
+        setIsLoaded(false);
+        return;
+      }
+      if (!res.success) {
+        setLoadError(res.message || 'The server could not load the ERP data.');
+        return;
+      }
       if (res.success) {
         setCurrentUser(res.currentUser);
+        setRealUser(res.realUser);
         setAllUsers(res.allUsers);
+        setAccessRequests(res.accessRequests || []);
+        setNeedsDevice(false);
         setMetrics(res.metrics);
         setProducts(res.products);
         setRawMaterials(res.rawMaterials);
@@ -130,6 +145,8 @@ export default function App() {
         setAuditLogs(res.auditLogs);
         setNotifications(res.notifications);
         setSettings(res.settings);
+        setIsLoaded(true);
+        setLoadError(null);
 
         // Calculate raw material usage and threshold warnings
         const usage = calculateRawMaterialUsage(
@@ -149,7 +166,8 @@ export default function App() {
         }
       }
     } catch (err) {
-      console.error('[App] Fast fetch failed, fallback:', err);
+      console.error('[App] Failed to load data from server:', err);
+      setLoadError('Could not reach the Nextar ERP server. Check that it is running, then retry.');
     }
   };
 
@@ -167,14 +185,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Immediate threshold warning toast on first frame
-    if (initialUsage.totalBelowThreshold > 0) {
-      showToast(
-        `⚠️ Reorder Threshold Alert: ${initialUsage.totalBelowThreshold} raw materials (${initialUsage.criticalMaterials.map(m => m.name).slice(0, 2).join(', ')}) are below reorder threshold!`,
-        'warning'
-      );
-    }
-    fetchAllData(false);
+    fetchAllData(true);
   }, []);
 
   // Action handlers
@@ -186,15 +197,72 @@ export default function App() {
         body: JSON.stringify({ userId }),
       }).then(r => r.json());
 
-      if (res.success) {
-        setCurrentUser(res.user);
-        showToast(`Active role switched to: ${res.user.fullName} (${res.user.role})`, 'info');
-        fetchAllData();
+      if (!res.success) {
+        showToast(res.message || 'Could not switch user.', 'warning');
+        return;
       }
+      showToast(
+        res.user.id === realUser?.id ? 'Back on your own account.' : `Now viewing the system as ${res.user.fullName}.`,
+        'info'
+      );
+      fetchAllData();
     } catch (e) {
       console.error(e);
     }
   };
+
+  const handleReleaseDevice = async () => {
+    const res = await fetch('/api/v1/auth/release-device', { method: 'POST' }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || 'Could not release this device.', 'warning');
+      return;
+    }
+    setIsLoaded(false);
+    setNeedsDevice(true);
+  };
+
+  // JSON request that reports the server's refusal as a toast; resolves to the body, or null on failure
+  const api = async (method: string, url: string, body?: unknown) => {
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      }).then(r => r.json());
+      if (!res.success) {
+        showToast(res.message || 'Request was rejected by the server.', 'warning');
+        return null;
+      }
+      return res;
+    } catch {
+      showToast('Could not reach the Nextar ERP server.', 'warning');
+      return null;
+    }
+  };
+
+  const handleSubmitAccessRequest = async (permissions: string[], reason: string) => {
+    const res = await api('POST', '/api/v1/access-requests', { permissions, reason });
+    if (!res) return false;
+    showToast(`Access request ${res.request.requestNumber} sent for approval.`, 'success');
+    setRequestPreset([]);
+    fetchAllData();
+    return true;
+  };
+
+  const handleCancelAccessRequest = async (id: string) => {
+    const res = await api('PUT', `/api/v1/access-requests/${id}/cancel`);
+    if (res) {
+      showToast(`Request ${res.request.requestNumber} cancelled.`, 'info');
+      fetchAllData();
+    }
+  };
+
+  // Keep the user on a page they may open after their access changes
+  useEffect(() => {
+    if (currentUser && !canOpenPage(currentUser, currentTab)) {
+      setCurrentTab(allowedTabs(currentUser)[0] || 'my-access');
+    }
+  }, [currentUser?.id, currentUser?.permissions?.join(',')]);
 
   const handleLaunchBatch = async (data: any) => {
     const res = await fetch('/api/v1/production/orders', {
@@ -202,6 +270,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Batch ${res.order.batchNumber} launched! Ingredients issued from silo.`, 'success');
       await fetchAllData();
@@ -222,6 +294,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Baking completed for ${res.order.batchNumber}. Sent to Quality Control.`, 'success');
       fetchAllData();
@@ -234,6 +310,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`QC Decision: ${data.overallDecision} recorded for ${res.record.batchNumber}!`, 'success');
       fetchAllData();
@@ -246,6 +326,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast('Physical stock count adjustment recorded successfully!', 'info');
       fetchAllData();
@@ -260,6 +344,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Purchase Order ${res.order.poNumber} issued!`, 'success');
       fetchAllData();
@@ -270,6 +358,10 @@ export default function App() {
     const res = await fetch(`/api/v1/procurement/orders/${poId}/approve`, {
       method: 'PUT',
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Purchase Order ${res.order.poNumber} approved by GM!`, 'success');
       fetchAllData();
@@ -282,6 +374,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`GRN ${res.grn.grnNumber} posted! Silo stock updated.`, 'success');
       fetchAllData();
@@ -294,6 +390,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Invoice ${res.invoice.invoiceNumber} posted successfully!`, 'success');
       fetchAllData();
@@ -308,6 +408,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Loading sheet ${res.dispatch.dispatchNumber} authorized!`, 'success');
       fetchAllData();
@@ -320,6 +424,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Route delivery reconciled for ${res.dispatch.dispatchNumber}!`, 'success');
       fetchAllData();
@@ -332,6 +440,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Return ${res.returnRecord.returnNumber} logged & dispositioned!`, 'info');
       fetchAllData();
@@ -344,6 +456,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Cashier register opened (${res.session.sessionCode})!`, 'success');
       fetchAllData();
@@ -356,6 +472,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Session ${res.session.sessionCode} closed & reconciled!`, 'success');
       fetchAllData();
@@ -368,6 +488,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Receipt ${res.payment.receiptNumber} issued successfully!`, 'success');
       fetchAllData();
@@ -380,6 +504,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Expense voucher ${res.expense.voucherNumber} approved!`, 'success');
       fetchAllData();
@@ -392,6 +520,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Journal entry ${res.entry.entryNumber} balanced & posted!`, 'success');
       fetchAllData();
@@ -406,6 +538,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Employee ${res.employee.fullName} registered!`, 'success');
       fetchAllData();
@@ -418,6 +554,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Shift attendance recorded: ${res.attendance.status}`, 'info');
       fetchAllData();
@@ -430,6 +570,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Bread product ${res.product.name} created!`, 'success');
       fetchAllData();
@@ -442,6 +586,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Product ${res.product.name} updated!`, 'info');
       fetchAllData();
@@ -454,6 +602,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Customer ${res.customer.businessName} registered!`, 'success');
       fetchAllData();
@@ -466,6 +618,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Marketer ${res.marketer.fullName} registered!`, 'success');
       fetchAllData();
@@ -478,6 +634,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       showToast(`Raw material ${res.rawMaterial.name} registered!`, 'success');
       fetchAllData();
@@ -490,6 +650,10 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newSettings),
     }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
       setSettings(res.settings);
       showToast('Bakery configuration updated!', 'info');
@@ -499,8 +663,12 @@ export default function App() {
 
   const handleResetDatabase = async () => {
     const res = await fetch('/api/v1/system/reset-demo', { method: 'POST' }).then(r => r.json());
+    if (!res.success) {
+      showToast(res.message || res.error || 'Request was rejected by the server.', 'warning');
+      return;
+    }
     if (res.success) {
-      showToast('Nextar Bakery database reset to authentic demo seed!', 'info');
+      showToast('Database reset to the Nextar sample data set.', 'info');
       fetchAllData();
     }
   };
@@ -509,6 +677,30 @@ export default function App() {
     await fetch('/api/v1/notifications/mark-read', { method: 'POST' });
     fetchAllData();
   };
+
+  if (needsDevice) {
+    return <DeviceSetup onAssigned={() => { setNeedsDevice(false); fetchAllData(true); }} />;
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-slate-950 text-slate-300 font-sans">
+        {loadError ? (
+          <>
+            <p className="text-sm text-amber-400">{loadError}</p>
+            <button
+              onClick={() => { setLoadError(null); fetchAllData(true); }}
+              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold"
+            >
+              Retry
+            </button>
+          </>
+        ) : (
+          <p className="text-sm animate-pulse">Loading Nextar ERP data…</p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen max-h-screen overflow-hidden bg-slate-950 text-slate-100 flex flex-col font-sans">
@@ -537,8 +729,12 @@ export default function App() {
       {/* Top Header */}
       <Header
         currentUser={currentUser}
+        realUser={realUser}
         allUsers={allUsers}
+        canSwitchUsers={isSuperAdmin(realUser)}
+        canResetDatabase={hasPermission(currentUser, 'system.reset')}
         onSwitchUser={handleSwitchUser}
+        onReleaseDevice={handleReleaseDevice}
         notifications={notifications}
         onMarkNotificationsRead={handleMarkNotificationsRead}
         onResetDatabase={handleResetDatabase}
@@ -550,12 +746,33 @@ export default function App() {
         <Sidebar
           currentTab={currentTab}
           onSelectTab={setCurrentTab}
-          userRole={currentUser?.role}
+          currentUser={currentUser}
+          pendingAccessRequests={hasPermission(currentUser, 'access.approve') ? accessRequests.filter(r => r.status === 'PENDING').length : 0}
         />
 
         {/* Workspace Content Canvas: Full-Width edge-to-edge independent scroll container */}
         <main className="flex-1 h-full overflow-y-auto overscroll-contain p-4 sm:p-6 bg-[#090d16] w-full min-w-0">
           <div className="w-full min-w-0 pb-16">
+            {!canOpenPage(currentUser, currentTab) ? (
+              <div className="max-w-lg mx-auto mt-16 bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-3">
+                <div className="text-lg font-bold text-white">You don't have access to this page</div>
+                <p className="text-xs text-slate-400">
+                  Ask for it and the Super Admin or an access approver will decide. You will see the outcome under My Access.
+                </p>
+                {PERMISSIONS.some(p => p.key === `page:${currentTab}`) && (
+                  <button
+                    onClick={() => {
+                      setRequestPreset([`page:${currentTab}`]);
+                      setCurrentTab('my-access');
+                    }}
+                    className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold"
+                  >
+                    Request access
+                  </button>
+                )}
+              </div>
+            ) : (
+            <>
             {currentTab === 'dashboard' && (
               <DashboardView
                 metrics={metrics}
@@ -570,6 +787,7 @@ export default function App() {
 
             {currentTab === 'recipes' && (
               <ProductionView
+                initialTab="recipes"
                 orders={productionOrders}
                 recipes={recipes}
                 products={products}
@@ -723,6 +941,7 @@ export default function App() {
                 returns={returns}
                 cashierSessions={cashierSessions}
                 payments={payments}
+                expenses={expenses}
               />
             )}
 
@@ -736,6 +955,28 @@ export default function App() {
                 onUpdateSettings={handleUpdateSettings}
                 onResetDatabase={handleResetDatabase}
               />
+            )}
+
+            {currentTab === 'admin' && currentUser && (
+              <AdminPanelView
+                currentUser={currentUser}
+                realUser={realUser}
+                requests={accessRequests}
+                api={api}
+                onChanged={() => fetchAllData()}
+              />
+            )}
+
+            {currentTab === 'my-access' && currentUser && (
+              <MyAccessView
+                currentUser={currentUser}
+                requests={accessRequests}
+                presetPermissions={requestPreset}
+                onSubmitRequest={handleSubmitAccessRequest}
+                onCancelRequest={handleCancelAccessRequest}
+              />
+            )}
+            </>
             )}
           </div>
         </main>

@@ -30,7 +30,7 @@ export const SalesInvoicesView: React.FC<SalesInvoicesViewProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0]?.id || '');
   const [selectedProductId, setSelectedProductId] = useState(products[0]?.id || '');
-  const [quantity, setQuantity] = useState(100);
+  const [quantity, setQuantity] = useState(0);
   const [paymentType, setPaymentType] = useState<'CASH' | 'BANK_TRANSFER' | 'CREDIT'>('CREDIT');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
@@ -41,10 +41,10 @@ export const SalesInvoicesView: React.FC<SalesInvoicesViewProps> = ({
   // Calculate unit price based on customer price tier
   const unitPrice =
     currentCustomer?.priceTier === 'DISTRIBUTOR'
-      ? currentProduct?.distributorPrice || 960
+      ? currentProduct?.distributorPrice || 0
       : currentCustomer?.priceTier === 'WHOLESALE'
-      ? currentProduct?.wholesalePrice || 1020
-      : currentProduct?.standardRetailPrice || 1200;
+      ? currentProduct?.wholesalePrice || 0
+      : currentProduct?.standardRetailPrice || 0;
 
   const subtotal = unitPrice * quantity;
   const netTotal = Math.max(0, subtotal - discountAmount);

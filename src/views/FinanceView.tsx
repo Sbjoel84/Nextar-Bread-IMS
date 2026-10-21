@@ -35,7 +35,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   // Expense Form
   const [category, setCategory] = useState<OperatingExpense['category']>('GAS_OVEN_FUEL');
   const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState(150000);
+  const [amount, setAmount] = useState(0);
   const [beneficiary, setBeneficiary] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'CASH_FLOAT' | 'COMPANY_BANK_TRANSFER'>('COMPANY_BANK_TRANSFER');
 
@@ -43,7 +43,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   const [narration, setNarration] = useState('');
   const [debitAccount, setDebitAccount] = useState('6100 - Factory Fuel & Energy');
   const [creditAccount, setCreditAccount] = useState('1100 - GTBank Corporate Account');
-  const [journalAmount, setJournalAmount] = useState(250000);
+  const [journalAmount, setJournalAmount] = useState(0);
 
   const handleExpenseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

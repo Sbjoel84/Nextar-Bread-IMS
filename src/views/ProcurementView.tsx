@@ -39,13 +39,13 @@ export const ProcurementView: React.FC<ProcurementViewProps> = ({
   // New PO State
   const [selectedSupplierId, setSelectedSupplierId] = useState(suppliers[0]?.id || '');
   const [selectedMaterialId, setSelectedMaterialId] = useState(rawMaterials[0]?.id || '');
-  const [orderQty, setOrderQty] = useState(100);
+  const [orderQty, setOrderQty] = useState(0);
   const [poNotes, setPONotes] = useState('');
 
   // GRN State
   const [supplierInvoiceRef, setSupplierInvoiceRef] = useState('');
-  const [receivedQty, setReceivedQty] = useState(100);
-  const [supplierLot, setSupplierLot] = useState('LOT-2026-');
+  const [receivedQty, setReceivedQty] = useState(0);
+  const [supplierLot, setSupplierLot] = useState('');
 
   const selectedSupplier = suppliers.find(s => s.id === selectedSupplierId) || suppliers[0];
   const selectedMaterial = rawMaterials.find(m => m.id === selectedMaterialId) || rawMaterials[0];

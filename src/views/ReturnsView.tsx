@@ -28,12 +28,12 @@ export const ReturnsView: React.FC<ReturnsViewProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0]?.id || '');
   const [selectedProductId, setSelectedProductId] = useState(products[0]?.id || '');
-  const [returnQty, setReturnQty] = useState(10);
+  const [returnQty, setReturnQty] = useState(0);
   const [reason, setReason] = useState<any>('STALE_UNSOLD');
   const [disposition, setDisposition] = useState<any>('SELL_AS_ANIMAL_FEED');
-  const [salvageAmount, setSalvageAmount] = useState(2000);
+  const [salvageAmount, setSalvageAmount] = useState(0);
   const [issueCreditNote, setIssueCreditNote] = useState(true);
-  const [creditAmount, setCreditAmount] = useState(10200);
+  const [creditAmount, setCreditAmount] = useState(0);
 
   const currentCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
   const currentProduct = products.find(p => p.id === selectedProductId) || products[0];
@@ -198,7 +198,7 @@ export const ReturnsView: React.FC<ReturnsViewProps> = ({
                     onChange={e => {
                       const qty = Number(e.target.value);
                       setReturnQty(qty);
-                      setCreditAmount(qty * (currentProduct?.wholesalePrice || 1020));
+                      setCreditAmount(qty * (currentProduct?.wholesalePrice || 0));
                       setSalvageAmount(qty * 200);
                     }}
                     min={1}

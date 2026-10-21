@@ -28,7 +28,10 @@ import {
   User,
   UserRole,
   DashboardMetrics,
+  AccessRequest,
+  DeviceSession,
 } from '../types/erp';
+import { ROLE_TEMPLATES } from '../shared/permissions';
 
 export interface DatabaseSchema {
   settings: BakerySettings;
@@ -56,6 +59,18 @@ export interface DatabaseSchema {
   attendanceRecords: AttendanceRecord[];
   auditLogs: AuditLogEntry[];
   notifications: SystemNotification[];
+  accessRequests: AccessRequest[];
+  sessions: DeviceSession[];
+}
+
+// Bring a loaded or freshly generated database up to the current schema (access control fields).
+function normalizeSchema(db: DatabaseSchema): DatabaseSchema {
+  db.accessRequests = db.accessRequests || [];
+  db.sessions = db.sessions || [];
+  for (const u of db.users) {
+    if (!Array.isArray(u.permissions)) u.permissions = [...(ROLE_TEMPLATES[u.role] || [])];
+  }
+  return db;
 }
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
@@ -66,9 +81,13 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-export function generateSeedData(): DatabaseSchema {
-  const now = new Date().toISOString();
-  const todayStr = new Date().toISOString().slice(0, 10);
+// The sample bakery records are written as if "today" were this date; generateSeedData()
+// moves the whole timeline forward so this date lands on the real current day.
+const SEED_ANCHOR_DATE = '2026-10-18';
+
+function buildSampleData(): DatabaseSchema {
+  const now = `${SEED_ANCHOR_DATE}T06:00:00Z`;
+  const todayStr = SEED_ANCHOR_DATE;
 
   const settings: BakerySettings = {
     bakeryName: 'Nextar Bread Bakery',
@@ -1637,7 +1656,176 @@ export function generateSeedData(): DatabaseSchema {
     attendanceRecords,
     auditLogs,
     notifications,
+    accessRequests: [],
+    sessions: [],
   };
+}
+
+// Shift every date in the dataset by whole days: ISO dates/timestamps ("2026-10-18", "2026-10-18T10:15:00Z")
+// and compact dates embedded in document codes ("NXT-20261018-S1-001", "CSH-20261018-S1").
+function shiftDates<T>(value: T, days: number): T {
+  if (days === 0) return value;
+  const shiftIso = (y: string, m: string, d: string) => {
+    const dt = new Date(Date.UTC(+y, +m - 1, +d + days));
+    return dt.toISOString().slice(0, 10);
+  };
+  const walk = (v: any): any => {
+    if (typeof v === 'string') {
+      return v
+        .replace(/\b(\d{4})-(\d{2})-(\d{2})(?=T|\b)/g, (_, y, m, d) => shiftIso(y, m, d))
+        .replace(/(?<=-)(20\d{2})(\d{2})(\d{2})(?=-|$)/g, (_, y, m, d) => shiftIso(y, m, d).replace(/-/g, ''));
+    }
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
+    return v;
+  };
+  return walk(value);
+}
+
+// Make every balance in the sample data traceable to an actual record, the same way the
+// live system would have produced it: stock from stock movements, product stock from
+// finished-goods lots, customer balances from invoices, payables/route balances from journals.
+function backBalancesWithRecords(db: DatabaseSchema): DatabaseSchema {
+  const today = SEED_ANCHOR_DATE;
+  const openingDate = '2026-10-01';
+  const openingTs = `${openingDate}T07:00:00Z`;
+  const postedBy = 'System Opening Balances';
+
+  // 1. Raw material stock = opening stock count + recorded movements
+  for (const rm of db.rawMaterials) {
+    const moves = db.stockLedger
+      .filter(m => m.rawMaterialId === rm.id)
+      .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    const movedNet = moves.reduce((acc, m) => acc + m.quantityDelta, 0);
+    const opening = Math.max(0, rm.currentStock - movedNet);
+    if (opening > 0) {
+      const openingMove = {
+        id: `mov-open-${rm.id}`,
+        timestamp: openingTs,
+        rawMaterialId: rm.id,
+        rawMaterialName: rm.name,
+        movementType: 'PHYSICAL_COUNT_ADJUSTMENT' as const,
+        quantityDelta: opening,
+        unit: rm.unitOfMeasure,
+        previousBalance: 0,
+        newBalance: opening,
+        referenceDocNumber: `ADJ-OPEN-${rm.code}`,
+        performedBy: postedBy,
+        notes: 'Opening stock count on system go-live',
+      };
+      db.stockLedger.push(openingMove);
+      moves.unshift(openingMove);
+    }
+    let running = 0;
+    for (const m of moves) {
+      m.previousBalance = running;
+      running += m.quantityDelta;
+      m.newBalance = running;
+    }
+    rm.currentStock = running;
+  }
+  db.stockLedger.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+  // 2. Product shelf stock = finished-goods lots available for dispatch
+  for (const p of db.products) {
+    const lotsAvailable = db.finishedGoods
+      .filter(fg => fg.productId === p.id)
+      .reduce((acc, fg) => acc + fg.quantityAvailableForDispatch, 0);
+    const missing = p.currentStockLoaves - lotsAvailable;
+    if (missing > 0) {
+      const expiry = new Date(Date.parse(today) + Math.max(1, p.shelfLifeDays - 1) * 86400000).toISOString().slice(0, 10);
+      db.finishedGoods.push({
+        id: `fg-open-${p.id}`,
+        productId: p.id,
+        productName: p.name,
+        batchNumber: `OPEN-${today.replace(/-/g, '')}-${p.code}`,
+        productionDate: today,
+        expiryDate: expiry,
+        quantityProduced: missing,
+        quantityAvailableForDispatch: missing,
+        quantityReserved: 0,
+        quantityDispatched: 0,
+        quantityReturned: 0,
+        warehouseLocation: 'Dispatch Hall - Opening Stock',
+        unitRetailPrice: p.standardRetailPrice,
+        status: 'AVAILABLE',
+      });
+    }
+    p.currentStockLoaves = Math.max(p.currentStockLoaves, lotsAvailable);
+  }
+
+  // 3. Customer balance = unpaid invoice amounts (older debt carried in as a "balance b/f" invoice)
+  let invSeq = 1;
+  for (const c of db.customers) {
+    const unpaid = db.salesInvoices
+      .filter(i => i.customerId === c.id && i.status !== 'CANCELLED')
+      .reduce((acc, i) => acc + i.amountDue, 0);
+    const carried = c.currentOutstandingBalance - unpaid;
+    if (carried > 0) {
+      db.salesInvoices.push({
+        id: `inv-open-${c.id}`,
+        invoiceNumber: `INV-OPEN-${String(invSeq++).padStart(3, '0')}`,
+        customerId: c.id,
+        customerName: c.businessName,
+        marketerId: c.assignedMarketerId,
+        marketerName: c.assignedMarketerName,
+        invoiceDate: openingDate,
+        dueDate: new Date(Date.parse(openingDate) + c.creditDays * 86400000).toISOString().slice(0, 10),
+        items: [{ productId: '', productName: 'Balance brought forward', quantity: 1, unitPrice: carried, subtotal: carried }],
+        subtotal: carried,
+        discountAmount: 0,
+        netPayableAmount: carried,
+        amountPaid: 0,
+        amountDue: carried,
+        paymentType: 'CREDIT',
+        status: 'POSTED',
+        postedBy,
+        createdAt: openingTs,
+      });
+    }
+    c.currentOutstandingBalance = Math.max(c.currentOutstandingBalance, unpaid);
+  }
+
+  // 4. Supplier payables and marketer route balances = opening journal entries
+  let jrnSeq = 1;
+  const openingJournal = (narration: string, sourceModule: 'PURCHASE' | 'SALES', debit: [string, string], credit: [string, string], amount: number) => {
+    db.journalEntries.push({
+      id: `jrn-open-${jrnSeq}`,
+      entryNumber: `JRN-OPEN-${String(jrnSeq++).padStart(3, '0')}`,
+      date: openingDate,
+      narration,
+      sourceModule,
+      lines: [
+        { accountCode: debit[0], accountName: debit[1], debitAmount: amount, creditAmount: 0 },
+        { accountCode: credit[0], accountName: credit[1], debitAmount: 0, creditAmount: amount },
+      ],
+      totalDebit: amount,
+      totalCredit: amount,
+      postedBy,
+      createdAt: openingTs,
+    });
+  };
+  for (const s of db.suppliers) {
+    if (s.outstandingPayable > 0) {
+      openingJournal(`Opening balance b/f — amount owed to supplier ${s.name}`, 'PURCHASE',
+        ['3900', 'Opening Balance Equity'], ['2100', `Accounts Payable - ${s.name}`], s.outstandingPayable);
+    }
+  }
+  for (const m of db.marketers) {
+    if (m.currentOwedBalance > 0) {
+      openingJournal(`Opening balance b/f — route collections owed by marketer ${m.fullName}`, 'SALES',
+        ['1210', `Marketer Route Receivable - ${m.fullName}`], ['3900', 'Opening Balance Equity'], m.currentOwedBalance);
+    }
+  }
+
+  return db;
+}
+
+// Sample Nextar bakery data, dated relative to the real current day, with every balance backed by records.
+export function generateSeedData(): DatabaseSchema {
+  const realToday = new Date().toISOString().slice(0, 10);
+  const days = Math.round((Date.parse(realToday) - Date.parse(SEED_ANCHOR_DATE)) / 86400000);
+  return shiftDates(backBalancesWithRecords(buildSampleData()), days);
 }
 
 // In-Memory Database with Atomic Disk Persistence
@@ -1653,7 +1841,7 @@ class DatabaseManager {
     try {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
-        const parsed = JSON.parse(raw);
+        const parsed = normalizeSchema(JSON.parse(raw));
         this.isLoaded = true;
         return parsed;
       }
@@ -1661,7 +1849,7 @@ class DatabaseManager {
       console.error('[DB] Error loading existing database, creating fresh seed:', e);
     }
 
-    const initial = generateSeedData();
+    const initial = normalizeSchema(generateSeedData());
     this.saveToDisk(initial);
     this.isLoaded = true;
     return initial;
@@ -1689,7 +1877,20 @@ class DatabaseManager {
   }
 
   public resetToSeed(): DatabaseSchema {
-    this.db = generateSeedData();
+    // Business records are replaced; who-can-do-what (users' access, device sessions, requests) is kept.
+    const previous = this.db;
+    const fresh = normalizeSchema(generateSeedData());
+    for (const u of fresh.users) {
+      const old = previous.users.find(p => p.id === u.id);
+      if (old) {
+        u.permissions = old.permissions;
+        u.isActive = old.isActive;
+      }
+    }
+    fresh.users.push(...previous.users.filter(p => !fresh.users.some(u => u.id === p.id)));
+    fresh.sessions = previous.sessions;
+    fresh.accessRequests = previous.accessRequests;
+    this.db = fresh;
     this.persist();
     return this.db;
   }
@@ -1697,6 +1898,13 @@ class DatabaseManager {
   public replaceAll(newData: DatabaseSchema): void {
     this.db = newData;
     this.persist();
+  }
+
+  private auditSuffixProvider: () => string = () => '';
+
+  // Lets the access layer append "performed by X while viewing as Y" to audit lines
+  public setAuditSuffixProvider(fn: () => string): void {
+    this.auditSuffixProvider = fn;
   }
 
   // Helper to record an immutable audit log
@@ -1718,7 +1926,7 @@ class DatabaseManager {
       action,
       entityType,
       entityId,
-      description,
+      description: description + this.auditSuffixProvider(),
       beforeSnapshot,
       afterSnapshot,
     };
@@ -1739,11 +1947,11 @@ class DatabaseManager {
     const plannedProductionLoaves = todayProdBatches.reduce((acc, b) => acc + (b.targetLoaves || 0), 0);
     const productionYieldEfficiency = plannedProductionLoaves > 0
       ? Math.round((todayProductionLoaves / plannedProductionLoaves) * 100 * 10) / 10
-      : 98.4;
+      : 0;
 
-    const finishedGoodsStockLoaves = this.db.finishedGoods.reduce((acc, fg) => acc + fg.quantityAvailableForDispatch, 0);
-    const finishedGoodsReadyForDispatch = this.db.finishedGoods.filter(fg => fg.status === 'AVAILABLE').reduce((acc, fg) => acc + fg.quantityAvailableForDispatch, 0);
-    const finishedGoodsOnHoldQC = this.db.productionOrders.filter(p => p.status === 'AWAITING_QC' || p.qcStatus === 'ON_HOLD').reduce((acc, p) => acc + (p.actualGoodLoaves || p.targetLoaves), 0);
+    const finishedGoodsStockLoaves = this.db.finishedGoods.reduce((acc, fg) => acc + (fg.quantityAvailableForDispatch || 0), 0);
+    const finishedGoodsReadyForDispatch = this.db.finishedGoods.filter(fg => fg.status === 'AVAILABLE').reduce((acc, fg) => acc + (fg.quantityAvailableForDispatch || 0), 0);
+    const finishedGoodsOnHoldQC = this.db.productionOrders.filter(p => p.status === 'AWAITING_QC' || p.qcStatus === 'ON_HOLD').reduce((acc, p) => acc + (p.actualGoodLoaves || p.targetLoaves || 0), 0);
 
     const rawMaterialsTotalValuation = this.db.rawMaterials.reduce((acc, rm) => acc + (rm.currentStock * rm.standardCostPerUnit), 0);
     const lowStockItemsCount = this.db.rawMaterials.filter(rm => rm.currentStock <= rm.minimumStockAlert).length;
@@ -1759,7 +1967,7 @@ class DatabaseManager {
     const todayReturnedLoaves = todayDispatches.reduce((acc, d) => acc + d.totalLoavesReturned, 0);
     const todayReturnsWastagePercent = todayDispatchedLoaves > 0
       ? Math.round((todayReturnedLoaves / (todayDispatchedLoaves + todayReturnedLoaves)) * 100 * 10) / 10
-      : 1.2;
+      : 0;
 
     const totalReceivablesDebtorsNaira = this.db.customers.reduce((acc, c) => acc + c.currentOutstandingBalance, 0);
     const totalPayablesCreditorsNaira = this.db.suppliers.reduce((acc, s) => acc + s.outstandingPayable, 0);
@@ -1788,23 +1996,23 @@ class DatabaseManager {
     }));
 
     return {
-      todayProductionLoaves: todayProductionLoaves || 1668,
-      plannedProductionLoaves: plannedProductionLoaves || 1700,
-      productionYieldEfficiency: productionYieldEfficiency || 98.1,
+      todayProductionLoaves,
+      plannedProductionLoaves,
+      productionYieldEfficiency,
       finishedGoodsStockLoaves,
       finishedGoodsReadyForDispatch,
       finishedGoodsOnHoldQC,
       rawMaterialsTotalValuation,
       lowStockItemsCount,
-      todaySalesInvoicedNaira: todaySalesInvoicedNaira || 630000,
-      todaySalesCashCollectedNaira: todaySalesCashCollectedNaira || 165000,
-      todayDispatchedLoaves: todayDispatchedLoaves || 593,
-      todayReturnedLoaves: todayReturnedLoaves || 7,
-      todayReturnsWastagePercent: todayReturnsWastagePercent || 1.1,
+      todaySalesInvoicedNaira,
+      todaySalesCashCollectedNaira,
+      todayDispatchedLoaves,
+      todayReturnedLoaves,
+      todayReturnsWastagePercent,
       totalReceivablesDebtorsNaira,
       totalPayablesCreditorsNaira,
-      todayOperatingExpensesNaira: todayOperatingExpensesNaira || 588000,
-      estimatedGrossProfitTodayNaira: estimatedGrossProfitTodayNaira || 245000,
+      todayOperatingExpensesNaira,
+      estimatedGrossProfitTodayNaira,
       pendingApprovalsCount,
       activeCashierSessionsOpen,
       unreconciledDispatchesCount,

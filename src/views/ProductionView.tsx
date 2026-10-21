@@ -22,6 +22,7 @@ interface ProductionViewProps {
   rawMaterials: RawMaterial[];
   onLaunchBatch: (data: any) => Promise<void>;
   onCompleteBatch: (orderId: string, data: any) => Promise<void>;
+  initialTab?: 'batches' | 'recipes';
 }
 
 export const ProductionView: React.FC<ProductionViewProps> = ({
@@ -31,16 +32,17 @@ export const ProductionView: React.FC<ProductionViewProps> = ({
   rawMaterials,
   onLaunchBatch,
   onCompleteBatch,
+  initialTab = 'batches',
 }) => {
-  const [activeTab, setActiveTab] = useState<'batches' | 'recipes'>('batches');
+  const [activeTab, setActiveTab] = useState<'batches' | 'recipes'>(initialTab);
   const [showLaunchModal, setShowLaunchModal] = useState(false);
   const [completingBatch, setCompletingBatch] = useState<ProductionOrder | null>(null);
 
   // New batch form state
   const [selectedRecipeId, setSelectedRecipeId] = useState(recipes[0]?.id || '');
-  const [targetLoaves, setTargetLoaves] = useState(1000);
+  const [targetLoaves, setTargetLoaves] = useState(0);
   const [shift, setShift] = useState<'MORNING_BAKE' | 'AFTERNOON_BAKE' | 'NIGHT_BAKE'>('MORNING_BAKE');
-  const [leadBaker, setLeadBaker] = useState('Sani Abdullahi (Senior Baker)');
+  const [leadBaker, setLeadBaker] = useState('');
 
   // Complete batch form state
   const [actualGood, setActualGood] = useState(0);

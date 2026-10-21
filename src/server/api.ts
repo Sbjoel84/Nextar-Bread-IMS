@@ -1,5 +1,7 @@
 import express, { Request, Response, Router } from 'express';
 import { dbManager } from './db';
+import { accessRouter, getContext, getCurrentUser, permissionGuard, publicUser, sessionMiddleware, visibleAccessRequests } from './access';
+import { isSuperAdmin } from '../shared/permissions';
 import {
   BreadProduct,
   RawMaterial,
@@ -28,14 +30,31 @@ import {
 
 export const apiRouter = Router();
 
-// Current active session user (defaults to Super Admin Joel Yahaya)
-let currentActiveUserId = 'usr-admin';
-
-function getCurrentUser(): User {
-  const db = dbManager.getRaw();
-  const user = db.users.find(u => u.id === currentActiveUserId);
-  return user || db.users[0];
+// Next document number in the PREFIX-YYYY-NNNN series, continuing from the highest number already issued this year.
+function nextDocNumber(prefix: string, existing: string[]): string {
+  const year = new Date().getFullYear();
+  const pattern = new RegExp(`^${prefix}-${year}-(\\d+)$`);
+  const highest = existing.reduce((max, num) => {
+    const m = pattern.exec(num || '');
+    return m ? Math.max(max, Number(m[1])) : max;
+  }, 0);
+  return `${prefix}-${year}-${String(highest + 1).padStart(4, '0')}`;
 }
+
+function nextStaffCode(existing: string[]): string {
+  const highest = existing.reduce((max, code) => {
+    const m = /^NXT-EMP-(\d+)$/.exec(code || '');
+    return m ? Math.max(max, Number(m[1])) : max;
+  }, 0);
+  return `NXT-EMP-${String(highest + 1).padStart(3, '0')}`;
+}
+
+
+// Every request runs as the user this device is assigned to (see ./access.ts);
+// the guard refuses actions the user has no permission for.
+apiRouter.use(sessionMiddleware);
+apiRouter.use(permissionGuard);
+apiRouter.use(accessRouter);
 
 // ---------------------------------------------------------------------------
 // 1. FAST CONSOLIDATED STATE (Instant Zero-Latency Applet Load)
@@ -43,12 +62,17 @@ function getCurrentUser(): User {
 apiRouter.get('/initial-state', (req: Request, res: Response) => {
   const db = dbManager.getRaw();
   const currentUser = getCurrentUser();
+  const { realUser } = getContext();
   const metrics = dbManager.computeDashboardMetrics();
 
   res.json({
     success: true,
-    currentUser,
-    allUsers: db.users,
+    currentUser: publicUser(currentUser),
+    realUser: realUser ? publicUser(realUser) : null,
+    impersonating: Boolean(realUser && realUser.id !== currentUser.id),
+    // Only a Super Admin (at the device) needs the user list, for switching
+    allUsers: isSuperAdmin(realUser) ? db.users.filter(u => u.isActive).map(publicUser) : [publicUser(currentUser)],
+    accessRequests: visibleAccessRequests(currentUser),
     metrics,
     products: db.products,
     rawMaterials: db.rawMaterials,
@@ -75,58 +99,6 @@ apiRouter.get('/initial-state', (req: Request, res: Response) => {
     notifications: db.notifications,
     settings: db.settings,
   });
-});
-
-apiRouter.get('/auth/me', (req: Request, res: Response) => {
-  const user = getCurrentUser();
-  res.json({ success: true, user });
-});
-
-apiRouter.get('/auth/users', (req: Request, res: Response) => {
-  const db = dbManager.getRaw();
-  res.json({ success: true, users: db.users });
-});
-
-apiRouter.post('/auth/switch-user', (req: Request, res: Response) => {
-  const { userId } = req.body;
-  const db = dbManager.getRaw();
-  const target = db.users.find(u => u.id === userId);
-  if (!target) {
-    return res.status(404).json({ success: false, message: 'User not found' });
-  }
-  currentActiveUserId = target.id;
-  target.lastLoginAt = new Date().toISOString();
-  dbManager.persist();
-
-  dbManager.recordAudit(
-    { id: target.id, username: target.username, role: target.role },
-    'UPDATE',
-    'USER_SESSION',
-    target.id,
-    `Switched active ERP user to ${target.fullName} (${target.role})`
-  );
-
-  res.json({ success: true, user: target, message: `Switched active role to ${target.role}` });
-});
-
-apiRouter.post('/auth/users', (req: Request, res: Response) => {
-  const db = dbManager.getRaw();
-  const actor = getCurrentUser();
-  const newUser: User = {
-    id: `usr-${Date.now()}`,
-    username: req.body.username || `user_${Date.now()}`,
-    fullName: req.body.fullName || 'New Employee',
-    email: req.body.email || '',
-    phone: req.body.phone || '',
-    role: req.body.role || 'PRODUCTION_OFFICER',
-    branch: req.body.branch || 'Kubwa Central',
-    isActive: true,
-    createdAt: new Date().toISOString(),
-  };
-  db.users.push(newUser);
-  dbManager.persist();
-  dbManager.recordAudit(actor, 'CREATE', 'USER', newUser.id, `Created user account for ${newUser.fullName} (${newUser.role})`);
-  res.status(201).json({ success: true, user: newUser });
 });
 
 // ---------------------------------------------------------------------------
@@ -156,10 +128,10 @@ apiRouter.post('/products', (req: Request, res: Response) => {
     sizeGrams: Number(req.body.sizeGrams) || 800,
     isSliced: Boolean(req.body.isSliced),
     packagingType: req.body.packagingType || 'PRINTED_NYLON',
-    standardRetailPrice: Number(req.body.standardRetailPrice) || 1000,
-    wholesalePrice: Number(req.body.wholesalePrice) || 850,
-    distributorPrice: Number(req.body.distributorPrice) || 800,
-    estimatedCostPrice: Number(req.body.estimatedCostPrice) || 550,
+    standardRetailPrice: Number(req.body.standardRetailPrice) || 0,
+    wholesalePrice: Number(req.body.wholesalePrice) || 0,
+    distributorPrice: Number(req.body.distributorPrice) || 0,
+    estimatedCostPrice: Number(req.body.estimatedCostPrice) || 0,
     shelfLifeDays: Number(req.body.shelfLifeDays) || 5,
     reorderAlertLevel: Number(req.body.reorderAlertLevel) || 100,
     barcode: req.body.barcode || `${Date.now()}`,
@@ -288,7 +260,7 @@ apiRouter.post('/suppliers', (req: Request, res: Response) => {
     address: req.body.address || 'Abuja, Nigeria',
     supplyCategories: req.body.supplyCategories || ['FLOUR'],
     paymentTerms: req.body.paymentTerms || 'NET_14',
-    creditLimit: Number(req.body.creditLimit) || 10000000,
+    creditLimit: Number(req.body.creditLimit) || 0,
     outstandingPayable: Number(req.body.outstandingPayable) || 0,
     rating: Number(req.body.rating) || 5,
     status: 'ACTIVE',
@@ -314,7 +286,7 @@ apiRouter.post('/procurement/orders', (req: Request, res: Response) => {
 
   const po: PurchaseOrder = {
     id: `po-${Date.now()}`,
-    poNumber: `PO-${new Date().getFullYear()}-${String(db.purchaseOrders.length + 84).padStart(4, '0')}`,
+    poNumber: nextDocNumber('PO', db.purchaseOrders.map(d => d.poNumber)),
     supplierId: req.body.supplierId,
     supplierName: req.body.supplierName,
     orderDate: req.body.orderDate || new Date().toISOString().slice(0, 10),
@@ -365,7 +337,7 @@ apiRouter.post('/procurement/grn', (req: Request, res: Response) => {
 
   const grn: GoodsReceiptNote = {
     id: `grn-${Date.now()}`,
-    grnNumber: `GRN-${new Date().getFullYear()}-${String(db.goodsReceiptNotes.length + 42).padStart(4, '0')}`,
+    grnNumber: nextDocNumber('GRN', db.goodsReceiptNotes.map(d => d.grnNumber)),
     poId: po.id,
     poNumber: po.poNumber,
     supplierId: po.supplierId,
@@ -406,6 +378,17 @@ apiRouter.post('/procurement/grn', (req: Request, res: Response) => {
       };
       db.stockLedger.unshift(ledgerEntry);
     }
+  }
+
+  // Received goods (at PO prices, incl. VAT) become a payable to the supplier
+  const supplier = db.suppliers.find(s => s.id === po.supplierId);
+  if (supplier) {
+    const receivedValue = grn.items.reduce((acc, item) => {
+      const poItem = po.items.find(i => i.rawMaterialId === item.rawMaterialId);
+      return acc + (Number(item.quantityReceived) || 0) * (poItem?.unitPrice || 0);
+    }, 0);
+    const vatRate = po.subtotal > 0 ? po.vatAmount / po.subtotal : 0;
+    supplier.outstandingPayable += Math.round(receivedValue * (1 + vatRate));
   }
 
   // Update PO received status
@@ -462,7 +445,26 @@ apiRouter.post('/production/orders', (req: Request, res: Response) => {
   const recipe = db.recipes.find(r => r.id === req.body.recipeId);
   const product = db.products.find(p => p.id === (req.body.productId || recipe?.productId));
 
-  const targetLoaves = Number(req.body.targetLoaves) || 1000;
+  if (!recipe || !product) {
+    return res.status(400).json({ success: false, message: 'Select a valid recipe and product for this batch.' });
+  }
+  const targetLoaves = Number(req.body.targetLoaves);
+  if (!targetLoaves || targetLoaves <= 0) {
+    return res.status(400).json({ success: false, message: 'Target loaves must be greater than zero.' });
+  }
+
+  // Ingredients can only be issued from stock that has actually been received
+  const issued: { rawMaterialId: string; actualQty: number; unit: string }[] = req.body.ingredientsIssued || [];
+  const shortages = issued
+    .map(ing => ({ ing, rm: db.rawMaterials.find(m => m.id === ing.rawMaterialId) }))
+    .filter(({ ing, rm }) => rm && ing.actualQty > rm.currentStock)
+    .map(({ ing, rm }) => `${rm!.name}: need ${ing.actualQty} ${ing.unit}, have ${rm!.currentStock}`);
+  if (shortages.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: `Insufficient raw material stock — receive goods (GRN) or post a stock count first. ${shortages.join('; ')}`,
+    });
+  }
   const shiftCode = req.body.shift === 'NIGHT_BAKE' ? 'S2' : 'S1';
   const dateNum = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const batchNum = `NXT-${dateNum}-${shiftCode}-${String(db.productionOrders.length + 1).padStart(3, '0')}`;
@@ -470,9 +472,9 @@ apiRouter.post('/production/orders', (req: Request, res: Response) => {
   const prodOrder: ProductionOrder = {
     id: `po-batch-${Date.now()}`,
     batchNumber: batchNum,
-    recipeId: recipe?.id || 'rcp-001',
-    productId: product?.id || 'prod-002',
-    productName: product?.name || 'Nextar Family Loaf',
+    recipeId: recipe.id,
+    productId: product.id,
+    productName: product.name,
     scheduledDate: req.body.scheduledDate || new Date().toISOString().slice(0, 10),
     shift: req.body.shift || 'MORNING_BAKE',
     targetLoaves,
@@ -482,7 +484,7 @@ apiRouter.post('/production/orders', (req: Request, res: Response) => {
     yieldEfficiencyPercent: 0,
     ingredientsIssued: req.body.ingredientsIssued || [],
     downtimeMinutes: 0,
-    leadBaker: req.body.leadBaker || 'Sani Abdullahi',
+    leadBaker: req.body.leadBaker || '',
     supervisor: `${actor.fullName} (${actor.role})`,
     status: 'IN_PROGRESS',
     qcStatus: 'PENDING',
@@ -657,9 +659,9 @@ apiRouter.post('/marketers', (req: Request, res: Response) => {
     email: req.body.email || '',
     assignedTerritory: req.body.assignedTerritory || 'Kubwa Territory',
     commissionType: req.body.commissionType || 'PERCENTAGE',
-    commissionRate: Number(req.body.commissionRate) || 5.0,
-    monthlySalesTargetLoaves: Number(req.body.monthlySalesTargetLoaves) || 15000,
-    dailyAllocationLimitLoaves: Number(req.body.dailyAllocationLimitLoaves) || 800,
+    commissionRate: Number(req.body.commissionRate) || 0,
+    monthlySalesTargetLoaves: Number(req.body.monthlySalesTargetLoaves) || 0,
+    dailyAllocationLimitLoaves: Number(req.body.dailyAllocationLimitLoaves) || 0,
     currentOwedBalance: 0,
     ytdTotalSales: 0,
     status: 'ACTIVE',
@@ -694,7 +696,7 @@ apiRouter.post('/customers', (req: Request, res: Response) => {
     assignedMarketerId: req.body.assignedMarketerId,
     assignedMarketerName: req.body.assignedMarketerName,
     priceTier: req.body.priceTier || 'WHOLESALE',
-    creditLimit: Number(req.body.creditLimit) || 500000,
+    creditLimit: Number(req.body.creditLimit) || 0,
     creditDays: Number(req.body.creditDays) || 7,
     currentOutstandingBalance: 0,
     status: 'ACTIVE',
@@ -736,7 +738,7 @@ apiRouter.post('/sales/invoices', (req: Request, res: Response) => {
 
   const invoice: SalesInvoice = {
     id: `inv-${Date.now()}`,
-    invoiceNumber: `INV-${new Date().getFullYear()}-${String(db.salesInvoices.length + 122).padStart(4, '0')}`,
+    invoiceNumber: nextDocNumber('INV', db.salesInvoices.map(d => d.invoiceNumber)),
     customerId: customer.id,
     customerName: customer.businessName,
     marketerId,
@@ -782,11 +784,11 @@ apiRouter.post('/dispatches', (req: Request, res: Response) => {
 
   const dsp: DispatchSheet = {
     id: `dsp-${Date.now()}`,
-    dispatchNumber: `DSP-${new Date().getFullYear()}-${String(db.dispatchSheets.length + 92).padStart(4, '0')}`,
+    dispatchNumber: nextDocNumber('DSP', db.dispatchSheets.map(d => d.dispatchNumber)),
     date: new Date().toISOString().slice(0, 10),
-    driverName: req.body.driverName || 'Kabir Usman',
-    driverPhone: req.body.driverPhone || '+234 814 678 9012',
-    vehicleNumberPlate: req.body.vehicleNumberPlate || 'KJA-782-XR (Toyota HiAce)',
+    driverName: req.body.driverName || '',
+    driverPhone: req.body.driverPhone || '',
+    vehicleNumberPlate: req.body.vehicleNumberPlate || '',
     marketerId: req.body.marketerId,
     marketerName: req.body.marketerName,
     destinationRoute: req.body.destinationRoute || 'Kubwa Route',
@@ -831,7 +833,7 @@ apiRouter.put('/dispatches/:id/reconcile', (req: Request, res: Response) => {
   dsp.status = 'RECONCILED';
   dsp.reconciledBy = `${actor.fullName} (${actor.role})`;
   dsp.reconciledAt = new Date().toISOString();
-  dsp.reconciliationNotes = req.body.reconciliationNotes || 'Reconciliation balanced.';
+  dsp.reconciliationNotes = req.body.reconciliationNotes || '';
 
   dbManager.persist();
   dbManager.recordAudit(actor, 'RECONCILE', 'DISPATCH_SHEET', dsp.id, `Reconciled dispatch ${dsp.dispatchNumber}. Delivered: ${dsp.totalLoavesDelivered}, Returns: ${dsp.totalLoavesReturned}`);
@@ -851,7 +853,7 @@ apiRouter.post('/returns', (req: Request, res: Response) => {
 
   const ret: BreadReturnRecord = {
     id: `ret-${Date.now()}`,
-    returnNumber: `RET-${new Date().getFullYear()}-${String(db.returnRecords.length + 29).padStart(4, '0')}`,
+    returnNumber: nextDocNumber('RET', db.returnRecords.map(d => d.returnNumber)),
     date: new Date().toISOString().slice(0, 10),
     dispatchId: req.body.dispatchId,
     dispatchNumber: req.body.dispatchNumber,
@@ -896,7 +898,7 @@ apiRouter.get('/cashier/sessions', (req: Request, res: Response) => {
 apiRouter.post('/cashier/sessions/open', (req: Request, res: Response) => {
   const db = dbManager.getRaw();
   const actor = getCurrentUser();
-  const openingFloat = Number(req.body.openingFloat) || 50000;
+  const openingFloat = Number(req.body.openingFloat) || 0;
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
   const session: CashierSession = {
@@ -933,7 +935,7 @@ apiRouter.put('/cashier/sessions/:id/close', (req: Request, res: Response) => {
   session.closedAt = new Date().toISOString();
   session.status = 'SUPERVISOR_VERIFIED';
   session.supervisorName = `${actor.fullName} (${actor.role})`;
-  session.supervisorNotes = req.body.supervisorNotes || 'Closed & verified.';
+  session.supervisorNotes = req.body.supervisorNotes || '';
 
   dbManager.persist();
   dbManager.recordAudit(actor, 'RECONCILE', 'CASHIER_SESSION', session.id, `Closed session ${session.sessionCode}. Count: ₦${actualCount.toLocaleString()}, Variance: ₦${session.cashVariance.toLocaleString()}`);
@@ -967,7 +969,7 @@ apiRouter.post('/payments', (req: Request, res: Response) => {
 
   const payment: PaymentReceipt = {
     id: `pay-${Date.now()}`,
-    receiptNumber: `RCT-${new Date().getFullYear()}-${String(db.payments.length + 157).padStart(4, '0')}`,
+    receiptNumber: nextDocNumber('RCT', db.payments.map(d => d.receiptNumber)),
     invoiceId,
     customerId: customer.id,
     customerName: customer.businessName,
@@ -1022,12 +1024,12 @@ apiRouter.post('/expenses', (req: Request, res: Response) => {
   const actor = getCurrentUser();
   const item: OperatingExpense = {
     id: `exp-${Date.now()}`,
-    voucherNumber: `EXP-${new Date().getFullYear()}-${String(db.operatingExpenses.length + 92).padStart(4, '0')}`,
+    voucherNumber: nextDocNumber('EXP', db.operatingExpenses.map(d => d.voucherNumber)),
     expenseDate: req.body.expenseDate || new Date().toISOString().slice(0, 10),
     category: req.body.category || 'OTHER',
     description: req.body.description,
     amount: Number(req.body.amount) || 0,
-    beneficiaryName: req.body.beneficiaryName || 'Vendor',
+    beneficiaryName: req.body.beneficiaryName || '',
     paymentMethod: req.body.paymentMethod || 'COMPANY_BANK_TRANSFER',
     approvedBy: `${actor.fullName} (${actor.role})`,
     receiptAttachmentRef: req.body.receiptAttachmentRef || '',
@@ -1067,7 +1069,7 @@ apiRouter.post('/journal', (req: Request, res: Response) => {
 
   const entry: JournalEntry = {
     id: `jrn-${Date.now()}`,
-    entryNumber: `JRN-${new Date().getFullYear()}-${String(db.journalEntries.length + 47).padStart(4, '0')}`,
+    entryNumber: nextDocNumber('JRN', db.journalEntries.map(d => d.entryNumber)),
     date: req.body.date || new Date().toISOString().slice(0, 10),
     narration: req.body.narration || 'General ledger posting',
     sourceModule: req.body.sourceModule || 'MANUAL',
@@ -1129,7 +1131,7 @@ apiRouter.post('/employees', (req: Request, res: Response) => {
   const actor = getCurrentUser();
   const item: Employee = {
     id: `emp-${Date.now()}`,
-    staffCode: req.body.staffCode || `NXT-EMP-${String(db.employees.length + 6).padStart(3, '0')}`,
+    staffCode: req.body.staffCode || nextStaffCode(db.employees.map(e => e.staffCode)),
     fullName: req.body.fullName,
     phone: req.body.phone || '',
     email: req.body.email || '',
@@ -1137,7 +1139,7 @@ apiRouter.post('/employees', (req: Request, res: Response) => {
     designation: req.body.designation || 'Bakery Worker',
     shiftPattern: req.body.shiftPattern || 'ROTATING',
     dateEmployed: req.body.dateEmployed || new Date().toISOString().slice(0, 10),
-    basicSalaryNaira: Number(req.body.basicSalaryNaira) || 150000,
+    basicSalaryNaira: Number(req.body.basicSalaryNaira) || 0,
     emergencyContact: req.body.emergencyContact || '',
     isActive: true,
   };
@@ -1219,12 +1221,12 @@ apiRouter.get('/system/backup', (req: Request, res: Response) => {
   const db = dbManager.getRaw();
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Content-Disposition', `attachment; filename=nextar_erp_backup_${new Date().toISOString().slice(0, 10)}.json`);
-  res.send(JSON.stringify(db, null, 2));
+  res.send(JSON.stringify({ ...db, sessions: [] }, null, 2));
 });
 
 apiRouter.post('/system/reset-demo', (req: Request, res: Response) => {
   const actor = getCurrentUser();
   const fresh = dbManager.resetToSeed();
-  dbManager.recordAudit(actor, 'REVERSE', 'DATABASE', 'full-database', 'Reset system to authentic Nextar Bread Bakery demo seed');
-  res.json({ success: true, message: 'Database reset to initial demonstration state', database: fresh });
+  dbManager.recordAudit(actor, 'REVERSE', 'DATABASE', 'full-database', 'Reset database to the Nextar sample data set');
+  res.json({ success: true, message: 'Database reset to the Nextar sample data set', database: fresh });
 });

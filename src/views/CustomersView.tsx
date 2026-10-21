@@ -29,11 +29,11 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
   const [businessName, setBusinessName] = useState('');
   const [customerType, setCustomerType] = useState<Customer['customerType']>('SUPERMARKET');
   const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('Kubwa, Abuja');
-  const [territory, setTerritory] = useState('Kubwa Central');
+  const [address, setAddress] = useState('');
+  const [territory, setTerritory] = useState('');
   const [assignedMarketerId, setAssignedMarketerId] = useState(marketers[0]?.id || '');
   const [priceTier, setPriceTier] = useState<'RETAIL' | 'WHOLESALE' | 'DISTRIBUTOR'>('WHOLESALE');
-  const [creditLimit, setCreditLimit] = useState(500000);
+  const [creditLimit, setCreditLimit] = useState(0);
   const [creditDays, setCreditDays] = useState(7);
 
   const handleAddSubmit = async (e: React.FormEvent) => {

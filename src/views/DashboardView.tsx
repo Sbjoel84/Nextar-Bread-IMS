@@ -209,7 +209,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-950/80 text-rose-300 border border-rose-800/80 font-mono font-medium"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                      {m.name}: <strong>{m.currentStock} {m.unit} left</strong> (Burn: ~{m.avgDailyBurnRate}/day)
+                      {m.name}: <strong>{m.currentStock} {m.unit} left</strong>
+                      {m.avgDailyBurnRate > 0 ? ` (Burn: ~${m.avgDailyBurnRate}/day)` : ' (no usage yet)'}
                     </span>
                   ))}
                   {warningItems.map(m => (
@@ -256,9 +257,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-white">
-              {metrics.todayProductionLoaves.toLocaleString()}
+              {(metrics.todayProductionLoaves ?? 0).toLocaleString()}
             </span>
-            <span className="text-xs text-slate-400">/ {metrics.plannedProductionLoaves.toLocaleString()} planned</span>
+            <span className="text-xs text-slate-400">/ {(metrics.plannedProductionLoaves ?? 0).toLocaleString()} planned</span>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs">
             <div className="flex items-center gap-1 text-emerald-400 font-semibold">
@@ -284,7 +285,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-white">
-              {metrics.finishedGoodsStockLoaves.toLocaleString()}
+              {(metrics.finishedGoodsStockLoaves ?? 0).toLocaleString()}
             </span>
             <span className="text-xs text-emerald-400 font-medium">Ready (FEFO)</span>
           </div>
@@ -603,14 +604,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     <div className="flex justify-between text-slate-400">
                       <span>Est. Daily Burn:</span>
                       <span className="font-mono font-semibold text-slate-200">
-                        {item.avgDailyBurnRate} {item.unit}/day
+                        {item.avgDailyBurnRate > 0 ? `${item.avgDailyBurnRate} ${item.unit}/day` : 'No usage yet'}
                       </span>
                     </div>
                     <div className="flex justify-between text-slate-400">
                       <span>Days of Supply:</span>
-                      <span className={`font-mono font-bold ${item.daysOfSupplyRemaining <= 3 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                        ~{item.daysOfSupplyRemaining} days left
-                      </span>
+                      {item.daysOfSupplyRemaining === null ? (
+                        <span className="font-mono font-semibold text-slate-400">—</span>
+                      ) : (
+                        <span className={`font-mono font-bold ${item.daysOfSupplyRemaining <= 3 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                          ~{item.daysOfSupplyRemaining} days left
+                        </span>
+                      )}
                     </div>
                     <div className="flex justify-between text-slate-400">
                       <span>Consumed Today:</span>

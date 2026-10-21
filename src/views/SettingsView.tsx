@@ -62,14 +62,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
           <button
             onClick={() => {
-              if (confirm('Are you sure you want to restore Nextar Bakery demo seed records?')) {
+              if (confirm('This replaces ALL current records with the Nextar sample data set (dated to today). Anything you have entered will be lost. Continue?')) {
                 onResetDatabase();
               }
             }}
             className="flex items-center gap-1.5 px-3 py-2 bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 rounded-lg text-xs font-semibold"
           >
             <RotateCcw className="w-4 h-4 text-rose-400" />
-            <span>Reset Demo Seed</span>
+            <span>Reset to Sample Data</span>
           </button>
         </div>
       </div>

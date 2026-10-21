@@ -24,12 +24,12 @@ export const MarketersView: React.FC<MarketersViewProps> = ({
   const [showAddModal, setShowAddModal] = useState(false);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [territory, setTerritory] = useState('Kubwa Central & Phase 4');
+  const [territory, setTerritory] = useState('');
   const [commissionType, setCommissionType] = useState<'PERCENTAGE' | 'FIXED_PER_LOAF'>('PERCENTAGE');
   const [commissionRate, setCommissionRate] = useState(5.0);
-  const [monthlyTarget, setMonthlyTarget] = useState(18000);
-  const [dailyAllocation, setDailyAllocation] = useState(800);
-  const [vehiclePlate, setVehiclePlate] = useState('KJA-782-XR (Toyota HiAce)');
+  const [monthlyTarget, setMonthlyTarget] = useState(0);
+  const [dailyAllocation, setDailyAllocation] = useState(0);
+  const [vehiclePlate, setVehiclePlate] = useState('');
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -29,9 +29,9 @@ export const QualityControlView: React.FC<QualityControlViewProps> = ({
   const [selectedRecord, setSelectedRecord] = useState<QualityControlRecord | null>(null);
 
   // Form state
-  const [samplesTested, setSamplesTested] = useState(10);
-  const [targetWeight, setTargetWeight] = useState(800);
-  const [actualWeight, setActualWeight] = useState(805);
+  const [samplesTested, setSamplesTested] = useState(0);
+  const [targetWeight, setTargetWeight] = useState(0);
+  const [actualWeight, setActualWeight] = useState(0);
   const [crumbRating, setCrumbRating] = useState<1 | 2 | 3 | 4 | 5>(5);
   const [crustRating, setCrustRating] = useState<1 | 2 | 3 | 4 | 5>(5);
   const [aromaRating, setAromaRating] = useState<1 | 2 | 3 | 4 | 5>(5);

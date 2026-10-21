@@ -33,6 +33,32 @@ export interface User {
   avatarUrl?: string;
   lastLoginAt?: string;
   createdAt: string;
+  permissions?: string[]; // keys from src/shared/permissions.ts; Super Admin implicitly has all
+}
+
+export interface AccessRequest {
+  id: string;
+  requestNumber: string; // ACR-YYYY-NNNN
+  requesterId: string;
+  requesterName: string;
+  requesterRole: UserRole;
+  permissions: string[];
+  reason: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+  decidedById?: string;
+  decidedByName?: string;
+  decidedAt?: string;
+  decisionNote?: string;
+  createdAt: string;
+}
+
+// A browser (device) bound to a user. Only a Super Admin can move a device to another user.
+export interface DeviceSession {
+  id: string;
+  userId: string;
+  impersonatorId?: string; // Super Admin viewing the system as userId
+  createdAt: string;
+  lastSeenAt: string;
 }
 
 export interface BreadProduct {

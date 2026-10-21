@@ -33,9 +33,9 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [department, setDepartment] = useState<Employee['department']>('BAKING');
-  const [designation, setDesignation] = useState('Rotary Oven Operator');
+  const [designation, setDesignation] = useState('');
   const [shiftPattern, setShiftPattern] = useState<Employee['shiftPattern']>('ROTATING');
-  const [salary, setSalary] = useState(180000);
+  const [salary, setSalary] = useState(0);
   const [emergency, setEmergency] = useState('');
 
   // Attendance Form

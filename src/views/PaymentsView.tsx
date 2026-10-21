@@ -27,7 +27,7 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0]?.id || '');
   const [selectedInvoiceId, setSelectedInvoiceId] = useState('');
-  const [amount, setAmount] = useState(50000);
+  const [amount, setAmount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER' | 'POS_MONIEPOINT' | 'POS_OPAY'>('POS_MONIEPOINT');
   const [bankRef, setBankRef] = useState('');
 
@@ -78,7 +78,7 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({
 
           <button
             onClick={() => {
-              setAmount(50000);
+              setAmount(0);
               setShowModal(true);
             }}
             className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all shadow-md"

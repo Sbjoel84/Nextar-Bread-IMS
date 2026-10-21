@@ -29,12 +29,12 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
   // Form state
   const [name, setName] = useState('');
   const [category, setCategory] = useState<'STANDARD' | 'PREMIUM' | 'SPECIALTY' | 'MINI'>('PREMIUM');
-  const [sizeGrams, setSizeGrams] = useState(800);
+  const [sizeGrams, setSizeGrams] = useState(0);
   const [isSliced, setIsSliced] = useState(false);
-  const [retailPrice, setRetailPrice] = useState(1200);
-  const [wholesalePrice, setWholesalePrice] = useState(1020);
-  const [distributorPrice, setDistributorPrice] = useState(960);
-  const [estimatedCost, setEstimatedCost] = useState(680);
+  const [retailPrice, setRetailPrice] = useState(0);
+  const [wholesalePrice, setWholesalePrice] = useState(0);
+  const [distributorPrice, setDistributorPrice] = useState(0);
+  const [estimatedCost, setEstimatedCost] = useState(0);
   const [shelfLifeDays, setShelfLifeDays] = useState(5);
 
   const handleAddSubmit = async (e: React.FormEvent) => {
@@ -88,12 +88,12 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
           onClick={() => {
             setName('');
             setCategory('PREMIUM');
-            setSizeGrams(800);
+            setSizeGrams(0);
             setIsSliced(false);
-            setRetailPrice(1200);
-            setWholesalePrice(1020);
-            setDistributorPrice(960);
-            setEstimatedCost(680);
+            setRetailPrice(0);
+            setWholesalePrice(0);
+            setDistributorPrice(0);
+            setEstimatedCost(0);
             setShowAddModal(true);
           }}
           className="flex items-center gap-1.5 px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold transition-all shadow-md"

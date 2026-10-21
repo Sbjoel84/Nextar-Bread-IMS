@@ -54,8 +54,9 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[Nextar ERP] Server active on http://0.0.0.0:${PORT}`);
-    console.log(`[Nextar ERP] API available at http://0.0.0.0:${PORT}/api/v1`);
+    // Listens on all interfaces; 0.0.0.0 itself is not browsable, so print a usable local URL
+    console.log(`[Nextar ERP] Server active on http://localhost:${PORT}`);
+    console.log(`[Nextar ERP] API available at http://localhost:${PORT}/api/v1`);
   });
 }
 

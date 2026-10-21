@@ -1,0 +1,1724 @@
+{
+  "settings": {
+    "bakeryName": "Nextar Bread Bakery",
+    "locationAddress": "Plot 48, Gado Nasko Road, Phase 2 Site, Kubwa",
+    "city": "Abuja",
+    "state": "Federal Capital Territory",
+    "country": "Nigeria",
+    "phone": "+234 803 555 7789, +234 812 444 9900",
+    "email": "info@nextarbakery.ng",
+    "rcNumber": "RC-1894205",
+    "taxIdentificationNumber": "TIN-28491024-0001",
+    "currencySymbol": "₦",
+    "defaultTimezone": "Africa/Lagos",
+    "autoReorderAlertThreshold": 15,
+    "poApprovalThresholdAmount": 500000,
+    "creditLimitStrictEnforcement": true,
+    "dailyProductionTargetLoaves": 3500,
+    "operatingWarehouses": [
+      {
+        "id": "wh-main-raw",
+        "name": "Kubwa Central Raw Material Silo & Store",
+        "type": "RAW_STORE"
+      },
+      {
+        "id": "wh-prod-floor",
+        "name": "Bakery Production Staging Floor",
+        "type": "PRODUCTION_FLOOR"
+      },
+      {
+        "id": "wh-dispatch",
+        "name": "Finished Goods Loading Bay & Dispatch Hall",
+        "type": "DISPATCH_BAY"
+      },
+      {
+        "id": "wh-stale",
+        "name": "Quarantine & Return Holding Area",
+        "type": "STALE_HOLDING"
+      }
+    ]
+  },
+  "users": [
+    {
+      "id": "usr-admin",
+      "username": "admin",
+      "fullName": "Alhaji Joel Yahaya",
+      "email": "joelyahaya7@gmail.com",
+      "phone": "+234 803 555 0101",
+      "role": "SUPER_ADMIN",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z",
+      "lastLoginAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-md",
+      "username": "md.director",
+      "fullName": "Chief Nnamdi Okafor",
+      "email": "md@nextarbakery.ng",
+      "phone": "+234 802 333 4455",
+      "role": "MANAGING_DIRECTOR",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-gm",
+      "username": "gm.operations",
+      "fullName": "Engr. Babatunde Lawal",
+      "email": "gm@nextarbakery.ng",
+      "phone": "+234 803 777 8899",
+      "role": "GENERAL_MANAGER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-pm",
+      "username": "prod.manager",
+      "fullName": "Master Baker Austin Eke",
+      "email": "production@nextarbakery.ng",
+      "phone": "+234 806 123 4567",
+      "role": "PRODUCTION_MANAGER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-po",
+      "username": "baker.sani",
+      "fullName": "Sani Abdullahi (Senior Baker)",
+      "email": "sani@nextarbakery.ng",
+      "phone": "+234 807 456 7890",
+      "role": "PRODUCTION_OFFICER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-qc",
+      "username": "qc.officer",
+      "fullName": "Grace Chioma Nwachukwu (Food Technologist)",
+      "email": "qc@nextarbakery.ng",
+      "phone": "+234 808 901 2345",
+      "role": "QC_OFFICER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-store",
+      "username": "storekeeper",
+      "fullName": "Haruna Garba",
+      "email": "inventory@nextarbakery.ng",
+      "phone": "+234 809 345 6789",
+      "role": "STOREKEEPER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-procure",
+      "username": "procurement",
+      "fullName": "Folashade Adeleke",
+      "email": "procurement@nextarbakery.ng",
+      "phone": "+234 810 567 8901",
+      "role": "PROCUREMENT_OFFICER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-salesmgr",
+      "username": "sales.manager",
+      "fullName": "Kenneth Ogbonna",
+      "email": "sales@nextarbakery.ng",
+      "phone": "+234 811 789 0123",
+      "role": "SALES_MANAGER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-mkt1",
+      "username": "musa.marketer",
+      "fullName": "Musa Ibrahim (Kubwa Territory)",
+      "email": "musa.ibrahim@nextarbakery.ng",
+      "phone": "+234 813 234 5678",
+      "role": "MARKETER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-dispatch",
+      "username": "dispatch.head",
+      "fullName": "Kabir Usman",
+      "email": "logistics@nextarbakery.ng",
+      "phone": "+234 814 678 9012",
+      "role": "DISPATCH_OFFICER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-acct",
+      "username": "accountant",
+      "fullName": "Zainab Bello (CPA)",
+      "email": "finance@nextarbakery.ng",
+      "phone": "+234 815 890 1234",
+      "role": "ACCOUNTANT",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-cashier",
+      "username": "cashier.morning",
+      "fullName": "Blessing Udoh",
+      "email": "cashier@nextarbakery.ng",
+      "phone": "+234 816 012 3456",
+      "role": "CASHIER",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "usr-auditor",
+      "username": "internal.auditor",
+      "fullName": "Oluwaseun Balogun",
+      "email": "audit@nextarbakery.ng",
+      "phone": "+234 817 123 4567",
+      "role": "AUDITOR",
+      "branch": "Kubwa Central",
+      "isActive": true,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-001",
+      "name": "Nextar Jumbo Special Loaf",
+      "code": "NXT-JUMBO-1000",
+      "category": "PREMIUM",
+      "sizeGrams": 1000,
+      "isSliced": false,
+      "packagingType": "PRINTED_NYLON",
+      "standardRetailPrice": 1500,
+      "wholesalePrice": 1300,
+      "distributorPrice": 1220,
+      "estimatedCostPrice": 860,
+      "shelfLifeDays": 5,
+      "reorderAlertLevel": 150,
+      "barcode": "615400010101",
+      "status": "ACTIVE",
+      "currentStockLoaves": 680,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "prod-002",
+      "name": "Nextar Family Loaf (Standard)",
+      "code": "NXT-FAM-800",
+      "category": "STANDARD",
+      "sizeGrams": 800,
+      "isSliced": false,
+      "packagingType": "PRINTED_NYLON",
+      "standardRetailPrice": 1200,
+      "wholesalePrice": 1020,
+      "distributorPrice": 960,
+      "estimatedCostPrice": 680,
+      "shelfLifeDays": 5,
+      "reorderAlertLevel": 250,
+      "barcode": "615400010102",
+      "status": "ACTIVE",
+      "currentStockLoaves": 940,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "prod-003",
+      "name": "Nextar Butter Bread Special",
+      "code": "NXT-BTR-500",
+      "category": "PREMIUM",
+      "sizeGrams": 500,
+      "isSliced": false,
+      "packagingType": "PRINTED_NYLON",
+      "standardRetailPrice": 900,
+      "wholesalePrice": 760,
+      "distributorPrice": 720,
+      "estimatedCostPrice": 510,
+      "shelfLifeDays": 5,
+      "reorderAlertLevel": 120,
+      "barcode": "615400010103",
+      "status": "ACTIVE",
+      "currentStockLoaves": 430,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "prod-004",
+      "name": "Nextar Special Sandwich Sliced",
+      "code": "NXT-SDW-750",
+      "category": "SPECIALTY",
+      "sizeGrams": 750,
+      "isSliced": true,
+      "packagingType": "PRINTED_NYLON",
+      "standardRetailPrice": 1300,
+      "wholesalePrice": 1120,
+      "distributorPrice": 1050,
+      "estimatedCostPrice": 740,
+      "shelfLifeDays": 4,
+      "reorderAlertLevel": 100,
+      "barcode": "615400010104",
+      "status": "ACTIVE",
+      "currentStockLoaves": 310,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "prod-005",
+      "name": "Nextar 100% Whole Wheat Bread",
+      "code": "NXT-WHT-600",
+      "category": "SPECIALTY",
+      "sizeGrams": 600,
+      "isSliced": true,
+      "packagingType": "PRINTED_NYLON",
+      "standardRetailPrice": 1250,
+      "wholesalePrice": 1080,
+      "distributorPrice": 1020,
+      "estimatedCostPrice": 710,
+      "shelfLifeDays": 4,
+      "reorderAlertLevel": 80,
+      "barcode": "615400010105",
+      "status": "ACTIVE",
+      "currentStockLoaves": 215,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "prod-006",
+      "name": "Nextar Coconut Sweet Bread",
+      "code": "NXT-COC-500",
+      "category": "SPECIALTY",
+      "sizeGrams": 500,
+      "isSliced": false,
+      "packagingType": "PRINTED_NYLON",
+      "standardRetailPrice": 1000,
+      "wholesalePrice": 850,
+      "distributorPrice": 800,
+      "estimatedCostPrice": 570,
+      "shelfLifeDays": 5,
+      "reorderAlertLevel": 70,
+      "barcode": "615400010106",
+      "status": "ACTIVE",
+      "currentStockLoaves": 160,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "prod-007",
+      "name": "Nextar Chocolate Swirl Bread",
+      "code": "NXT-CHOC-500",
+      "category": "SPECIALTY",
+      "sizeGrams": 500,
+      "isSliced": false,
+      "packagingType": "PRINTED_NYLON",
+      "standardRetailPrice": 1100,
+      "wholesalePrice": 950,
+      "distributorPrice": 900,
+      "estimatedCostPrice": 620,
+      "shelfLifeDays": 4,
+      "reorderAlertLevel": 50,
+      "barcode": "615400010107",
+      "status": "ACTIVE",
+      "currentStockLoaves": 110,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "prod-008",
+      "name": "Nextar Golden Dinner Rolls (6 Pcs Pack)",
+      "code": "NXT-ROLL-300",
+      "category": "MINI",
+      "sizeGrams": 300,
+      "isSliced": false,
+      "packagingType": "POLY_BAG",
+      "standardRetailPrice": 700,
+      "wholesalePrice": 580,
+      "distributorPrice": 540,
+      "estimatedCostPrice": 380,
+      "shelfLifeDays": 4,
+      "reorderAlertLevel": 80,
+      "barcode": "615400010108",
+      "status": "ACTIVE",
+      "currentStockLoaves": 185,
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    }
+  ],
+  "rawMaterials": [
+    {
+      "id": "rm-001",
+      "code": "RAW-FLR-01",
+      "name": "Golden Penny Prime Baker Flour (50kg)",
+      "category": "FLOUR",
+      "unitOfMeasure": "BAG_50KG",
+      "currentStock": 480,
+      "minimumStockAlert": 120,
+      "standardCostPerUnit": 64500,
+      "supplierId": "sup-001",
+      "supplierName": "Flour Mills of Nigeria Plc (Golden Penny)",
+      "storageLocation": "Silo A, Main Kubwa Raw Store",
+      "supplierLotNumber": "GP-202610-098",
+      "expiryDate": "2027-04-15",
+      "lastRestockedDate": "2026-10-14",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-002",
+      "code": "RAW-SGR-01",
+      "name": "Dangote Fortified Granulated Sugar (50kg)",
+      "category": "SUGAR",
+      "unitOfMeasure": "BAG_50KG",
+      "currentStock": 85,
+      "minimumStockAlert": 25,
+      "standardCostPerUnit": 78000,
+      "supplierId": "sup-002",
+      "supplierName": "Dangote Sugar Refinery Plc",
+      "storageLocation": "Dry Bay 2, Main Kubwa Raw Store",
+      "supplierLotNumber": "DS-26-8841",
+      "expiryDate": "2027-10-30",
+      "lastRestockedDate": "2026-10-12",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-003",
+      "code": "RAW-YST-01",
+      "name": "Saf-Instant Gold Baker Dry Yeast (500g)",
+      "category": "YEAST",
+      "unitOfMeasure": "PACK_500G",
+      "currentStock": 340,
+      "minimumStockAlert": 80,
+      "standardCostPerUnit": 4200,
+      "supplierId": "sup-005",
+      "supplierName": "Saf-Instant & Lesaffre Ingredients Ltd",
+      "storageLocation": "Cool Dry Rack C-1",
+      "supplierLotNumber": "SAF-NG-770",
+      "expiryDate": "2027-08-20",
+      "lastRestockedDate": "2026-10-10",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-004",
+      "code": "RAW-MAR-01",
+      "name": "BUA Top-Bake Vegetable Margarine (15kg)",
+      "category": "FAT_OIL",
+      "unitOfMeasure": "CARTON_15KG",
+      "currentStock": 110,
+      "minimumStockAlert": 30,
+      "standardCostPerUnit": 34500,
+      "supplierId": "sup-003",
+      "supplierName": "BUA Foods Plc (Flour & Margarine)",
+      "storageLocation": "Fat Storage Room, Temp Controlled",
+      "supplierLotNumber": "BUA-FAT-449",
+      "expiryDate": "2027-03-31",
+      "lastRestockedDate": "2026-10-11",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-005",
+      "code": "RAW-SLT-01",
+      "name": "Dangote Iodized Refined Fine Salt (25kg)",
+      "category": "SALT",
+      "unitOfMeasure": "BAG_25KG",
+      "currentStock": 45,
+      "minimumStockAlert": 15,
+      "standardCostPerUnit": 14000,
+      "supplierId": "sup-002",
+      "supplierName": "Dangote Sugar Refinery Plc",
+      "storageLocation": "Dry Bay 1, Pallet 4",
+      "supplierLotNumber": "DNG-SLT-021",
+      "expiryDate": "2028-01-01",
+      "lastRestockedDate": "2026-09-28",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-006",
+      "code": "RAW-IMP-01",
+      "name": "Magimix Super Bread Improver (10kg)",
+      "category": "IMPROVER",
+      "unitOfMeasure": "KG",
+      "currentStock": 145,
+      "minimumStockAlert": 35,
+      "standardCostPerUnit": 5800,
+      "supplierId": "sup-005",
+      "supplierName": "Saf-Instant & Lesaffre Ingredients Ltd",
+      "storageLocation": "Chemical Storage Cabinet A",
+      "supplierLotNumber": "MGM-X992",
+      "expiryDate": "2027-06-15",
+      "lastRestockedDate": "2026-10-05",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-007",
+      "code": "RAW-PRV-01",
+      "name": "Food Grade Calcium Propionate Anti-Mould (25kg)",
+      "category": "PRESERVATIVE",
+      "unitOfMeasure": "KG",
+      "currentStock": 95,
+      "minimumStockAlert": 20,
+      "standardCostPerUnit": 6200,
+      "supplierId": "sup-005",
+      "supplierName": "Saf-Instant & Lesaffre Ingredients Ltd",
+      "storageLocation": "Chemical Storage Cabinet B",
+      "supplierLotNumber": "CP-4401",
+      "expiryDate": "2027-11-01",
+      "lastRestockedDate": "2026-09-30",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-008",
+      "code": "RAW-NYL-01",
+      "name": "Nextar Branded Holographic Bread Nylon Wrappers",
+      "category": "PACKAGING",
+      "unitOfMeasure": "BUNDLE_1000",
+      "currentStock": 82,
+      "minimumStockAlert": 20,
+      "standardCostPerUnit": 26000,
+      "supplierId": "sup-004",
+      "supplierName": "Prime Packaging & Plastics Nig. Ltd",
+      "storageLocation": "Packaging Room Bay 3",
+      "supplierLotNumber": "PRM-NYL-88",
+      "lastRestockedDate": "2026-10-08",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-009",
+      "code": "RAW-MILK-01",
+      "name": "Aroma-Bake Powdered Milk Flavour (1kg)",
+      "category": "OTHER",
+      "unitOfMeasure": "KG",
+      "currentStock": 38,
+      "minimumStockAlert": 10,
+      "standardCostPerUnit": 7500,
+      "supplierId": "sup-005",
+      "supplierName": "Saf-Instant & Lesaffre Ingredients Ltd",
+      "storageLocation": "Cool Dry Rack C-2",
+      "expiryDate": "2027-09-12",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "rm-010",
+      "code": "RAW-SES-01",
+      "name": "Washed Sesame Seeds for Crust (10kg)",
+      "category": "OTHER",
+      "unitOfMeasure": "KG",
+      "currentStock": 52,
+      "minimumStockAlert": 15,
+      "standardCostPerUnit": 3200,
+      "supplierId": "sup-003",
+      "supplierName": "BUA Foods Plc (Flour & Margarine)",
+      "storageLocation": "Dry Bay 3, Shelf 2",
+      "expiryDate": "2027-05-30",
+      "updatedAt": "2026-10-19T21:17:57.414Z"
+    }
+  ],
+  "stockLedger": [
+    {
+      "id": "mov-001",
+      "timestamp": "2026-10-14T09:30:00Z",
+      "rawMaterialId": "rm-001",
+      "rawMaterialName": "Golden Penny Prime Baker Flour (50kg)",
+      "movementType": "PURCHASE_RECEIPT",
+      "quantityDelta": 200,
+      "unit": "BAG_50KG",
+      "previousBalance": 320,
+      "newBalance": 520,
+      "referenceDocNumber": "GRN-2026-0041",
+      "performedBy": "Haruna Garba (Storekeeper)",
+      "notes": "Received batch from FMN trailer, all bags dry and inspected."
+    },
+    {
+      "id": "mov-002",
+      "timestamp": "2026-10-17T20:30:00Z",
+      "rawMaterialId": "rm-001",
+      "rawMaterialName": "Golden Penny Prime Baker Flour (50kg)",
+      "movementType": "ISSUE_TO_PRODUCTION",
+      "quantityDelta": -40,
+      "unit": "BAG_50KG",
+      "previousBalance": 520,
+      "newBalance": 480,
+      "referenceDocNumber": "NXT-20261018-S1-001",
+      "performedBy": "Haruna Garba (Storekeeper)",
+      "notes": "Issued to Lead Baker Sani for Night & Morning Production run."
+    },
+    {
+      "id": "mov-003",
+      "timestamp": "2026-10-17T20:45:00Z",
+      "rawMaterialId": "rm-002",
+      "rawMaterialName": "Dangote Fortified Granulated Sugar (50kg)",
+      "movementType": "ISSUE_TO_PRODUCTION",
+      "quantityDelta": -5,
+      "unit": "BAG_50KG",
+      "previousBalance": 90,
+      "newBalance": 85,
+      "referenceDocNumber": "NXT-20261018-S1-001",
+      "performedBy": "Haruna Garba (Storekeeper)",
+      "notes": "Issued for dough mix."
+    },
+    {
+      "id": "mov-004",
+      "timestamp": "2026-10-17T21:00:00Z",
+      "rawMaterialId": "rm-008",
+      "rawMaterialName": "Nextar Branded Holographic Bread Nylon Wrappers",
+      "movementType": "ISSUE_TO_PRODUCTION",
+      "quantityDelta": -4,
+      "unit": "BUNDLE_1000",
+      "previousBalance": 86,
+      "newBalance": 82,
+      "referenceDocNumber": "NXT-20261018-S1-001",
+      "performedBy": "Haruna Garba (Storekeeper)",
+      "notes": "4,000 wrappers issued to packaging section."
+    }
+  ],
+  "suppliers": [
+    {
+      "id": "sup-001",
+      "code": "SUP-FMN-01",
+      "name": "Flour Mills of Nigeria Plc (Golden Penny)",
+      "contactPerson": "Alhaji Bashir Mohammed (Regional Sales)",
+      "phone": "+234 803 111 2233",
+      "email": "abuja.sales@fmnplc.com",
+      "address": "Idu Industrial Layout, Phase 1, Abuja",
+      "supplyCategories": [
+        "FLOUR",
+        "SALT"
+      ],
+      "paymentTerms": "NET_14",
+      "creditLimit": 25000000,
+      "outstandingPayable": 4650000,
+      "rating": 5,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "sup-002",
+      "code": "SUP-DNG-02",
+      "name": "Dangote Sugar Refinery Plc",
+      "contactPerson": "Mrs. Funke Adeyemi",
+      "phone": "+234 802 222 3344",
+      "email": "sugar.orders@dangote.com",
+      "address": "Plot 14, Commercial District, Idu, Abuja",
+      "supplyCategories": [
+        "SUGAR",
+        "SALT"
+      ],
+      "paymentTerms": "NET_14",
+      "creditLimit": 15000000,
+      "outstandingPayable": 2150000,
+      "rating": 5,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "sup-003",
+      "code": "SUP-BUA-03",
+      "name": "BUA Foods Plc (Flour & Margarine)",
+      "contactPerson": "Mallam Shehu Aliyu",
+      "phone": "+234 803 333 4455",
+      "email": "sales.abuja@buagroup.com",
+      "address": "Dei-Dei Building Materials Market Ext, Abuja",
+      "supplyCategories": [
+        "FLOUR",
+        "FAT_OIL"
+      ],
+      "paymentTerms": "NET_7",
+      "creditLimit": 12000000,
+      "outstandingPayable": 1800000,
+      "rating": 4,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "sup-004",
+      "code": "SUP-PRM-04",
+      "name": "Prime Packaging & Plastics Nig. Ltd",
+      "contactPerson": "Chief Clement Nwosu",
+      "phone": "+234 805 444 5566",
+      "email": "primepack.abuja@gmail.com",
+      "address": "Suleja-Kubwa Industrial Axis, Niger/FCT border",
+      "supplyCategories": [
+        "PACKAGING"
+      ],
+      "paymentTerms": "CASH_ON_DELIVERY",
+      "creditLimit": 5000000,
+      "outstandingPayable": 450000,
+      "rating": 4,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "sup-005",
+      "code": "SUP-SAF-05",
+      "name": "Saf-Instant & Lesaffre Ingredients Ltd",
+      "contactPerson": "Emmanuel Dickson",
+      "phone": "+234 806 555 6677",
+      "email": "lesaffre.nigeria@lesaffre.com",
+      "address": "Utako Modern Market Plaza, Abuja",
+      "supplyCategories": [
+        "YEAST",
+        "IMPROVER",
+        "PRESERVATIVE"
+      ],
+      "paymentTerms": "NET_14",
+      "creditLimit": 8000000,
+      "outstandingPayable": 920000,
+      "rating": 5,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    }
+  ],
+  "purchaseOrders": [
+    {
+      "id": "po-001",
+      "poNumber": "PO-2026-0082",
+      "supplierId": "sup-001",
+      "supplierName": "Flour Mills of Nigeria Plc (Golden Penny)",
+      "orderDate": "2026-10-12",
+      "expectedDeliveryDate": "2026-10-14",
+      "items": [
+        {
+          "rawMaterialId": "rm-001",
+          "name": "Golden Penny Prime Baker Flour (50kg)",
+          "quantityOrdered": 200,
+          "quantityReceived": 200,
+          "unit": "BAG_50KG",
+          "unitPrice": 64500,
+          "totalPrice": 12900000
+        }
+      ],
+      "subtotal": 12900000,
+      "vatAmount": 0,
+      "totalAmount": 12900000,
+      "status": "RECEIVED",
+      "approvalRequired": true,
+      "approvedBy": "Engr. Babatunde Lawal (GM)",
+      "approvedAt": "2026-10-12T14:10:00Z",
+      "notes": "Monthly bulk flour delivery. 30 days credit term.",
+      "createdAt": "2026-10-12T11:00:00Z"
+    },
+    {
+      "id": "po-002",
+      "poNumber": "PO-2026-0083",
+      "supplierId": "sup-004",
+      "supplierName": "Prime Packaging & Plastics Nig. Ltd",
+      "orderDate": "2026-10-15",
+      "expectedDeliveryDate": "2026-10-19",
+      "items": [
+        {
+          "rawMaterialId": "rm-008",
+          "name": "Nextar Branded Holographic Bread Nylon Wrappers",
+          "quantityOrdered": 50,
+          "quantityReceived": 0,
+          "unit": "BUNDLE_1000",
+          "unitPrice": 26000,
+          "totalPrice": 1300000
+        }
+      ],
+      "subtotal": 1300000,
+      "vatAmount": 0,
+      "totalAmount": 1300000,
+      "status": "APPROVED",
+      "approvalRequired": true,
+      "approvedBy": "Engr. Babatunde Lawal (GM)",
+      "approvedAt": "2026-10-16T10:00:00Z",
+      "notes": "50,000 branded nylons for Jumbo and Family Loaves.",
+      "createdAt": "2026-10-15T15:20:00Z"
+    }
+  ],
+  "goodsReceiptNotes": [
+    {
+      "id": "grn-001",
+      "grnNumber": "GRN-2026-0041",
+      "poId": "po-001",
+      "poNumber": "PO-2026-0082",
+      "supplierId": "sup-001",
+      "supplierName": "Flour Mills of Nigeria Plc (Golden Penny)",
+      "supplierInvoiceRef": "INV-FMN-98214",
+      "receivedDate": "2026-10-14",
+      "receivedBy": "Haruna Garba (Storekeeper)",
+      "items": [
+        {
+          "rawMaterialId": "rm-001",
+          "name": "Golden Penny Prime Baker Flour (50kg)",
+          "quantityReceived": 200,
+          "unit": "BAG_50KG",
+          "unitCost": 64500,
+          "supplierLotNumber": "GP-202610-098",
+          "expiryDate": "2027-04-15",
+          "condition": "EXCELLENT"
+        }
+      ],
+      "isReconciledWithInvoice": true,
+      "remarks": "Inspected by QC Officer Grace. Moisture test 13.2% (Passed).",
+      "createdAt": "2026-10-14T09:30:00Z"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "rcp-001",
+      "recipeCode": "RCP-FAM-01",
+      "productId": "prod-002",
+      "productName": "Nextar Family Loaf (Standard 800g)",
+      "version": 2,
+      "batchBaseFlourKg": 50,
+      "expectedTheoreticalYieldLoaves": 100,
+      "standardBakingTimeMins": 38,
+      "standardOvenTempCelsius": 215,
+      "ingredients": [
+        {
+          "rawMaterialId": "rm-001",
+          "rawMaterialName": "Golden Penny Prime Baker Flour",
+          "quantityPerBatch": 50,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-002",
+          "rawMaterialName": "Dangote Fortified Granulated Sugar",
+          "quantityPerBatch": 5.5,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-003",
+          "rawMaterialName": "Saf-Instant Gold Baker Dry Yeast",
+          "quantityPerBatch": 0.5,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-004",
+          "rawMaterialName": "BUA Top-Bake Vegetable Margarine",
+          "quantityPerBatch": 2.2,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-005",
+          "rawMaterialName": "Dangote Iodized Refined Fine Salt",
+          "quantityPerBatch": 0.8,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-006",
+          "rawMaterialName": "Magimix Super Bread Improver",
+          "quantityPerBatch": 0.25,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-007",
+          "rawMaterialName": "Calcium Propionate Anti-Mould",
+          "quantityPerBatch": 0.15,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-009",
+          "rawMaterialName": "Aroma-Bake Powdered Milk Flavour",
+          "quantityPerBatch": 0.2,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-008",
+          "rawMaterialName": "Nextar Branded Holographic Bread Nylon Wrappers",
+          "quantityPerBatch": 100,
+          "unit": "PCS"
+        }
+      ],
+      "preparationInstructions": [
+        "Dry blend flour, sugar, salt, milk flavour and improver in spiral mixer for 2 minutes on low speed.",
+        "Add chilled water and yeast suspension; knead at high speed for 8-10 minutes until gluten window is achieved.",
+        "Add softened margarine in final 3 minutes of mixing until dough is smooth, elastic and non-sticky.",
+        "Scale dough into 850g dough balls to account for bake loss (final loaf 800g ± 15g).",
+        "Mould and place in greased quadruple loaf tins.",
+        "Proof in steam proofing chamber at 38°C and 85% RH for 90 minutes until dough crowns 1.5 inches above tin rim.",
+        "Bake in rotary deck oven at 215°C for 38 minutes with initial 10-second steam burst.",
+        "Depan immediately onto cooling racks; cool for minimum 60 minutes before packaging."
+      ],
+      "isApproved": true,
+      "approvedBy": "Master Baker Austin Eke (Production Manager)",
+      "updatedAt": "2026-09-15T10:00:00Z"
+    },
+    {
+      "id": "rcp-002",
+      "recipeCode": "RCP-JMB-01",
+      "productId": "prod-001",
+      "productName": "Nextar Jumbo Special Loaf (1kg)",
+      "version": 2,
+      "batchBaseFlourKg": 50,
+      "expectedTheoreticalYieldLoaves": 78,
+      "standardBakingTimeMins": 44,
+      "standardOvenTempCelsius": 210,
+      "ingredients": [
+        {
+          "rawMaterialId": "rm-001",
+          "rawMaterialName": "Golden Penny Prime Baker Flour",
+          "quantityPerBatch": 50,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-002",
+          "rawMaterialName": "Dangote Fortified Granulated Sugar",
+          "quantityPerBatch": 6,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-003",
+          "rawMaterialName": "Saf-Instant Gold Baker Dry Yeast",
+          "quantityPerBatch": 0.55,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-004",
+          "rawMaterialName": "BUA Top-Bake Vegetable Margarine",
+          "quantityPerBatch": 2.5,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-005",
+          "rawMaterialName": "Dangote Iodized Refined Fine Salt",
+          "quantityPerBatch": 0.85,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-006",
+          "rawMaterialName": "Magimix Super Bread Improver",
+          "quantityPerBatch": 0.28,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-007",
+          "rawMaterialName": "Calcium Propionate Anti-Mould",
+          "quantityPerBatch": 0.18,
+          "unit": "KG"
+        },
+        {
+          "rawMaterialId": "rm-008",
+          "rawMaterialName": "Nextar Branded Holographic Bread Nylon Wrappers",
+          "quantityPerBatch": 78,
+          "unit": "PCS"
+        }
+      ],
+      "preparationInstructions": [
+        "Scale dough into 1,060g pieces to yield finished 1,000g loaves.",
+        "Bake at 210°C for 44 minutes until golden mahogany crust forms."
+      ],
+      "isApproved": true,
+      "approvedBy": "Master Baker Austin Eke (Production Manager)",
+      "updatedAt": "2026-09-15T10:00:00Z"
+    }
+  ],
+  "productionOrders": [
+    {
+      "id": "po-batch-001",
+      "batchNumber": "NXT-20261018-S1-001",
+      "recipeId": "rcp-001",
+      "productId": "prod-002",
+      "productName": "Nextar Family Loaf (Standard 800g)",
+      "scheduledDate": "2026-10-19",
+      "shift": "MORNING_BAKE",
+      "targetLoaves": 1000,
+      "actualGoodLoaves": 982,
+      "rejectedLoaves": 14,
+      "doughScrapKg": 3.5,
+      "yieldEfficiencyPercent": 98.2,
+      "ingredientsIssued": [
+        {
+          "rawMaterialId": "rm-001",
+          "rawMaterialName": "Flour (50kg)",
+          "plannedQty": 10,
+          "actualQty": 10,
+          "unit": "BAG_50KG"
+        },
+        {
+          "rawMaterialId": "rm-002",
+          "rawMaterialName": "Sugar (50kg)",
+          "plannedQty": 1.1,
+          "actualQty": 1.1,
+          "unit": "BAG_50KG"
+        },
+        {
+          "rawMaterialId": "rm-003",
+          "rawMaterialName": "Yeast (500g)",
+          "plannedQty": 10,
+          "actualQty": 10,
+          "unit": "PACK_500G"
+        },
+        {
+          "rawMaterialId": "rm-004",
+          "rawMaterialName": "Margarine (15kg)",
+          "plannedQty": 1.5,
+          "actualQty": 1.5,
+          "unit": "CARTON_15KG"
+        }
+      ],
+      "mixingStartTime": "2026-10-18T05:00:00Z",
+      "bakingEndTime": "2026-10-18T09:15:00Z",
+      "downtimeMinutes": 15,
+      "downtimeReason": "AEDC Public power outage; switched to 100kVA Mikano generator.",
+      "leadBaker": "Sani Abdullahi",
+      "supervisor": "Master Baker Austin Eke",
+      "status": "COMPLETED",
+      "qcStatus": "RELEASED",
+      "notes": "Excellent golden crust development and uniform crumb expansion.",
+      "createdAt": "2026-10-18T04:30:00Z"
+    },
+    {
+      "id": "po-batch-002",
+      "batchNumber": "NXT-20261018-S1-002",
+      "recipeId": "rcp-002",
+      "productId": "prod-001",
+      "productName": "Nextar Jumbo Special Loaf (1kg)",
+      "scheduledDate": "2026-10-19",
+      "shift": "MORNING_BAKE",
+      "targetLoaves": 700,
+      "actualGoodLoaves": 686,
+      "rejectedLoaves": 8,
+      "doughScrapKg": 2,
+      "yieldEfficiencyPercent": 98,
+      "ingredientsIssued": [
+        {
+          "rawMaterialId": "rm-001",
+          "rawMaterialName": "Flour (50kg)",
+          "plannedQty": 9,
+          "actualQty": 9,
+          "unit": "BAG_50KG"
+        }
+      ],
+      "mixingStartTime": "2026-10-18T08:30:00Z",
+      "bakingEndTime": "2026-10-18T12:00:00Z",
+      "downtimeMinutes": 0,
+      "leadBaker": "Sani Abdullahi",
+      "supervisor": "Master Baker Austin Eke",
+      "status": "COMPLETED",
+      "qcStatus": "RELEASED",
+      "notes": "Packed and transferred to Dispatch Hall.",
+      "createdAt": "2026-10-18T08:00:00Z"
+    }
+  ],
+  "qualityControlRecords": [
+    {
+      "id": "qc-001",
+      "batchId": "po-batch-001",
+      "batchNumber": "NXT-20261018-S1-001",
+      "productName": "Nextar Family Loaf (Standard 800g)",
+      "inspectionDate": "2026-10-18T09:45:00Z",
+      "inspectorName": "Grace Chioma Nwachukwu (QC Officer)",
+      "sampleLoavesTested": 10,
+      "targetWeightGrams": 800,
+      "actualAverageWeightGrams": 805,
+      "weightVariancePercentage": 0.62,
+      "isWeightCompliant": true,
+      "crumbTextureRating": 5,
+      "crustColorRating": 5,
+      "aromaTasteRating": 5,
+      "moisturePassed": true,
+      "packagingSealingPassed": true,
+      "overallDecision": "RELEASED",
+      "releasedAt": "2026-10-18T10:00:00Z",
+      "traceabilityChain": {
+        "flourLot": "GP-202610-098",
+        "yeastLot": "SAF-NG-770",
+        "bakingShift": "Morning Shift Bake (Deck 1 & 2)",
+        "ovenNumber": "Rotary Oven #1 (Gas fired)"
+      }
+    },
+    {
+      "id": "qc-002",
+      "batchId": "po-batch-002",
+      "batchNumber": "NXT-20261018-S1-002",
+      "productName": "Nextar Jumbo Special Loaf (1kg)",
+      "inspectionDate": "2026-10-18T12:30:00Z",
+      "inspectorName": "Grace Chioma Nwachukwu (QC Officer)",
+      "sampleLoavesTested": 8,
+      "targetWeightGrams": 1000,
+      "actualAverageWeightGrams": 1008,
+      "weightVariancePercentage": 0.8,
+      "isWeightCompliant": true,
+      "crumbTextureRating": 5,
+      "crustColorRating": 5,
+      "aromaTasteRating": 5,
+      "moisturePassed": true,
+      "packagingSealingPassed": true,
+      "overallDecision": "RELEASED",
+      "releasedAt": "2026-10-18T12:45:00Z",
+      "traceabilityChain": {
+        "flourLot": "GP-202610-098",
+        "yeastLot": "SAF-NG-770",
+        "bakingShift": "Morning Shift Bake (Deck 3)",
+        "ovenNumber": "Rotary Oven #2 (Gas fired)"
+      }
+    }
+  ],
+  "finishedGoods": [
+    {
+      "id": "fg-001",
+      "productId": "prod-002",
+      "productName": "Nextar Family Loaf (Standard 800g)",
+      "batchNumber": "NXT-20261018-S1-001",
+      "productionDate": "2026-10-19",
+      "expiryDate": "2026-10-23",
+      "quantityProduced": 982,
+      "quantityAvailableForDispatch": 582,
+      "quantityReserved": 400,
+      "quantityDispatched": 0,
+      "quantityReturned": 0,
+      "warehouseLocation": "Dispatch Hall - Rack A1 (FEFO)",
+      "unitRetailPrice": 1200,
+      "status": "AVAILABLE"
+    },
+    {
+      "id": "fg-002",
+      "productId": "prod-001",
+      "productName": "Nextar Jumbo Special Loaf (1kg)",
+      "batchNumber": "NXT-20261018-S1-002",
+      "productionDate": "2026-10-19",
+      "expiryDate": "2026-10-23",
+      "quantityProduced": 686,
+      "quantityAvailableForDispatch": 436,
+      "quantityReserved": 250,
+      "quantityDispatched": 0,
+      "quantityReturned": 0,
+      "warehouseLocation": "Dispatch Hall - Rack B1 (FEFO)",
+      "unitRetailPrice": 1500,
+      "status": "AVAILABLE"
+    }
+  ],
+  "marketers": [
+    {
+      "id": "mkt-001",
+      "marketerCode": "MKT-KBW-01",
+      "fullName": "Musa Ibrahim",
+      "phone": "+234 813 234 5678",
+      "email": "musa.ibrahim@nextarbakery.ng",
+      "assignedTerritory": "Kubwa Central, Phase 4 & Byazhin",
+      "commissionType": "PERCENTAGE",
+      "commissionRate": 5,
+      "monthlySalesTargetLoaves": 18000,
+      "dailyAllocationLimitLoaves": 800,
+      "currentOwedBalance": 84000,
+      "ytdTotalSales": 14250000,
+      "status": "ACTIVE",
+      "assignedVehiclePlate": "RSH-234-AA (Tricycle)",
+      "joinedDate": "2025-03-01"
+    },
+    {
+      "id": "mkt-002",
+      "marketerCode": "MKT-GWR-02",
+      "fullName": "Chinedu Eze",
+      "phone": "+234 814 345 6789",
+      "email": "chinedu.eze@nextarbakery.ng",
+      "assignedTerritory": "Gwarinpa Estate, 1st - 7th Avenue",
+      "commissionType": "FIXED_PER_LOAF",
+      "commissionRate": 40,
+      "monthlySalesTargetLoaves": 22000,
+      "dailyAllocationLimitLoaves": 1000,
+      "currentOwedBalance": 120000,
+      "ytdTotalSales": 18900000,
+      "status": "ACTIVE",
+      "assignedVehiclePlate": "ABC-551-KU (Suzuki Mini Van)",
+      "joinedDate": "2024-11-15"
+    },
+    {
+      "id": "mkt-003",
+      "marketerCode": "MKT-BWR-03",
+      "fullName": "Fatima Aliyu",
+      "phone": "+234 815 456 7890",
+      "email": "fatima.aliyu@nextarbakery.ng",
+      "assignedTerritory": "Dutse Alhaji, Usman Dam & Bwari Town",
+      "commissionType": "PERCENTAGE",
+      "commissionRate": 5,
+      "monthlySalesTargetLoaves": 14000,
+      "dailyAllocationLimitLoaves": 600,
+      "currentOwedBalance": 45000,
+      "ytdTotalSales": 9800000,
+      "status": "ACTIVE",
+      "assignedVehiclePlate": "BWR-912-KT (Delivery Van)",
+      "joinedDate": "2025-06-20"
+    },
+    {
+      "id": "mkt-004",
+      "marketerCode": "MKT-WUS-04",
+      "fullName": "Emmanuel Ade",
+      "phone": "+234 816 567 8901",
+      "email": "emmanuel.ade@nextarbakery.ng",
+      "assignedTerritory": "Wuse 2, Maitama Supermarkets & Utako Market",
+      "commissionType": "PERCENTAGE",
+      "commissionRate": 6,
+      "monthlySalesTargetLoaves": 25000,
+      "dailyAllocationLimitLoaves": 1200,
+      "currentOwedBalance": 210000,
+      "ytdTotalSales": 24500000,
+      "status": "ACTIVE",
+      "assignedVehiclePlate": "KJA-782-XR (Toyota HiAce Van)",
+      "joinedDate": "2024-05-10"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-001",
+      "customerCode": "CST-KBW-01",
+      "name": "Mrs. Abigail Okon",
+      "businessName": "Kubwa Grand Supermarket & Bakery Corner",
+      "customerType": "SUPERMARKET",
+      "phone": "+234 803 777 0011",
+      "email": "orders@kubwagrand.ng",
+      "address": "Suite 12, Gado Nasko Way, Kubwa, Abuja",
+      "territory": "Kubwa Central",
+      "assignedMarketerId": "mkt-001",
+      "assignedMarketerName": "Musa Ibrahim",
+      "priceTier": "WHOLESALE",
+      "creditLimit": 500000,
+      "creditDays": 7,
+      "currentOutstandingBalance": 125000,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "cust-002",
+      "customerCode": "CST-KBW-02",
+      "name": "Alhaji Gambo Umar",
+      "businessName": "Phase 4 Bread Depot & Wholesale Hub",
+      "customerType": "BREAD_DEPOT",
+      "phone": "+234 802 888 1122",
+      "email": "gambodepot@gmail.com",
+      "address": "Near 2/2 Junction, Phase 4, Kubwa, Abuja",
+      "territory": "Kubwa Phase 4",
+      "assignedMarketerId": "mkt-001",
+      "assignedMarketerName": "Musa Ibrahim",
+      "priceTier": "DISTRIBUTOR",
+      "creditLimit": 1200000,
+      "creditDays": 7,
+      "currentOutstandingBalance": 340000,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "cust-003",
+      "customerCode": "CST-GWR-03",
+      "name": "Mr. Jude Chukwu",
+      "businessName": "3rd Avenue HyperMart Gwarinpa",
+      "customerType": "SUPERMARKET",
+      "phone": "+234 805 999 2233",
+      "email": "procure@hypermartgwr.com",
+      "address": "Plot 104, 3rd Avenue, Gwarinpa Estate, Abuja",
+      "territory": "Gwarinpa Estate",
+      "assignedMarketerId": "mkt-002",
+      "assignedMarketerName": "Chinedu Eze",
+      "priceTier": "WHOLESALE",
+      "creditLimit": 800000,
+      "creditDays": 14,
+      "currentOutstandingBalance": 210000,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "cust-004",
+      "customerCode": "CST-BWR-04",
+      "name": "Hajiya Maryam Bello",
+      "businessName": "Bwari College Cafeteria & Stores",
+      "customerType": "INSTITUTION",
+      "phone": "+234 806 000 3344",
+      "email": "bwaricanteen@yahoo.com",
+      "address": "Near FGC Bwari, Bwari Central, Abuja",
+      "territory": "Bwari Central",
+      "assignedMarketerId": "mkt-003",
+      "assignedMarketerName": "Fatima Aliyu",
+      "priceTier": "WHOLESALE",
+      "creditLimit": 300000,
+      "creditDays": 7,
+      "currentOutstandingBalance": 65000,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    },
+    {
+      "id": "cust-005",
+      "customerCode": "CST-WUS-05",
+      "name": "Nextar Retail Kiosk (Bakery Front Kubwa)",
+      "businessName": "Nextar Fresh Bread Retail Counter",
+      "customerType": "RETAIL_KIOSK",
+      "phone": "+234 803 555 7789",
+      "email": "kiosk@nextarbakery.ng",
+      "address": "Bakery Gate, Plot 48 Gado Nasko Road, Kubwa",
+      "territory": "Kubwa Central",
+      "priceTier": "RETAIL",
+      "creditLimit": 0,
+      "creditDays": 0,
+      "currentOutstandingBalance": 0,
+      "status": "ACTIVE",
+      "createdAt": "2026-10-19T21:17:57.414Z"
+    }
+  ],
+  "salesInvoices": [
+    {
+      "id": "inv-001",
+      "invoiceNumber": "INV-2026-0120",
+      "customerId": "cust-001",
+      "customerName": "Kubwa Grand Supermarket & Bakery Corner",
+      "marketerId": "mkt-001",
+      "marketerName": "Musa Ibrahim",
+      "invoiceDate": "2026-10-19",
+      "dueDate": "2026-10-25",
+      "items": [
+        {
+          "productId": "prod-002",
+          "productName": "Nextar Family Loaf (Standard 800g)",
+          "quantity": 150,
+          "unitPrice": 1020,
+          "subtotal": 153000
+        },
+        {
+          "productId": "prod-001",
+          "productName": "Nextar Jumbo Special Loaf (1kg)",
+          "quantity": 80,
+          "unitPrice": 1300,
+          "subtotal": 104000
+        }
+      ],
+      "subtotal": 257000,
+      "discountAmount": 7000,
+      "netPayableAmount": 250000,
+      "amountPaid": 125000,
+      "amountDue": 125000,
+      "paymentType": "CREDIT",
+      "status": "PARTIALLY_PAID",
+      "dispatchRef": "DSP-2026-0091",
+      "postedBy": "Kenneth Ogbonna (Sales Manager)",
+      "createdAt": "2026-10-18T10:15:00Z"
+    },
+    {
+      "id": "inv-002",
+      "invoiceNumber": "INV-2026-0121",
+      "customerId": "cust-002",
+      "customerName": "Phase 4 Bread Depot & Wholesale Hub",
+      "marketerId": "mkt-001",
+      "marketerName": "Musa Ibrahim",
+      "invoiceDate": "2026-10-19",
+      "dueDate": "2026-10-25",
+      "items": [
+        {
+          "productId": "prod-002",
+          "productName": "Nextar Family Loaf (Standard 800g)",
+          "quantity": 250,
+          "unitPrice": 960,
+          "subtotal": 240000
+        },
+        {
+          "productId": "prod-001",
+          "productName": "Nextar Jumbo Special Loaf (1kg)",
+          "quantity": 120,
+          "unitPrice": 1220,
+          "subtotal": 146400
+        }
+      ],
+      "subtotal": 386400,
+      "discountAmount": 6400,
+      "netPayableAmount": 380000,
+      "amountPaid": 40000,
+      "amountDue": 340000,
+      "paymentType": "CREDIT",
+      "status": "PARTIALLY_PAID",
+      "dispatchRef": "DSP-2026-0091",
+      "postedBy": "Kenneth Ogbonna (Sales Manager)",
+      "createdAt": "2026-10-18T10:30:00Z"
+    }
+  ],
+  "dispatchSheets": [
+    {
+      "id": "dsp-001",
+      "dispatchNumber": "DSP-2026-0091",
+      "date": "2026-10-19",
+      "driverName": "Kabir Usman",
+      "driverPhone": "+234 814 678 9012",
+      "vehicleNumberPlate": "KJA-782-XR (Toyota HiAce)",
+      "marketerId": "mkt-001",
+      "marketerName": "Musa Ibrahim",
+      "destinationRoute": "Kubwa Central & Phase 4 Morning Route",
+      "items": [
+        {
+          "productId": "prod-002",
+          "productName": "Nextar Family Loaf (Standard 800g)",
+          "batchNumber": "NXT-20261018-S1-001",
+          "quantityLoaded": 400,
+          "quantityDelivered": 395,
+          "quantityReturned": 5,
+          "unitPrice": 1020
+        },
+        {
+          "productId": "prod-001",
+          "productName": "Nextar Jumbo Special Loaf (1kg)",
+          "batchNumber": "NXT-20261018-S1-002",
+          "quantityLoaded": 200,
+          "quantityDelivered": 198,
+          "quantityReturned": 2,
+          "unitPrice": 1300
+        }
+      ],
+      "totalLoavesLoaded": 600,
+      "totalLoavesDelivered": 593,
+      "totalLoavesReturned": 7,
+      "totalValueDelivered": 660300,
+      "cashCollectedOnRoute": 285000,
+      "bankTransferOnRoute": 210300,
+      "status": "RECONCILED",
+      "dispatchedBy": "Kabir Usman (Dispatch Officer)",
+      "reconciledBy": "Blessing Udoh (Cashier)",
+      "reconciledAt": "2026-10-18T14:45:00Z",
+      "reconciliationNotes": "7 returns inspected: 4 stales from yesterday swap, 3 crushed in transit. All cash deposited.",
+      "createdAt": "2026-10-18T09:45:00Z"
+    }
+  ],
+  "returnRecords": [
+    {
+      "id": "ret-001",
+      "returnNumber": "RET-2026-0028",
+      "date": "2026-10-19",
+      "dispatchId": "dsp-001",
+      "dispatchNumber": "DSP-2026-0091",
+      "customerId": "cust-001",
+      "customerName": "Kubwa Grand Supermarket & Bakery Corner",
+      "marketerId": "mkt-001",
+      "marketerName": "Musa Ibrahim",
+      "items": [
+        {
+          "productId": "prod-002",
+          "productName": "Nextar Family Loaf (Standard 800g)",
+          "batchNumber": "NXT-20261018-S1-001",
+          "quantity": 4,
+          "reason": "STALE_UNSOLD"
+        },
+        {
+          "productId": "prod-001",
+          "productName": "Nextar Jumbo Special Loaf (1kg)",
+          "batchNumber": "NXT-20261018-S1-002",
+          "quantity": 3,
+          "reason": "TRANSIT_CRUSHED"
+        }
+      ],
+      "totalLoavesReturned": 7,
+      "dispositionAction": "SELL_AS_ANIMAL_FEED",
+      "salvageRecoveryAmount": 1400,
+      "creditNoteIssuedToCustomer": true,
+      "creditNoteAmount": 7980,
+      "approvedBy": "Grace Chioma Nwachukwu (QC Officer)",
+      "inspectionNotes": "No fungal mould. Approved for animal feed sales.",
+      "status": "DISPOSITIONED_AND_CLOSED",
+      "createdAt": "2026-10-18T15:10:00Z"
+    }
+  ],
+  "cashierSessions": [
+    {
+      "id": "csh-001",
+      "sessionCode": "CSH-20261019-S1",
+      "cashierId": "usr-cashier",
+      "cashierName": "Blessing Udoh",
+      "shift": "MORNING",
+      "openedAt": "2026-10-18T07:00:00Z",
+      "openingFloat": 50000,
+      "totalCashSales": 165000,
+      "totalBankTransfers": 310000,
+      "totalCreditCollections": 125000,
+      "totalExpensesPaidOut": 18000,
+      "expectedPhysicalCash": 322000,
+      "actualPhysicalCashCounted": 322000,
+      "cashVariance": 0,
+      "status": "OPEN",
+      "supervisorName": "Zainab Bello (Accountant)",
+      "supervisorNotes": "Midday check balanced. POS settlement slip verified."
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay-001",
+      "receiptNumber": "RCT-2026-0155",
+      "invoiceId": "inv-001",
+      "invoiceNumber": "INV-2026-0120",
+      "customerId": "cust-001",
+      "customerName": "Kubwa Grand Supermarket & Bakery Corner",
+      "marketerId": "mkt-001",
+      "paymentDate": "2026-10-19",
+      "amountPaid": 125000,
+      "paymentMethod": "POS_MONIEPOINT",
+      "bankReferenceNumber": "MP-POS-20261018-9941",
+      "cashierSessionId": "csh-001",
+      "recordedBy": "Blessing Udoh (Cashier)",
+      "idempotencyKey": "IDEMP-CUST001-20261018-125K",
+      "isReversed": false,
+      "createdAt": "2026-10-18T11:45:00Z"
+    },
+    {
+      "id": "pay-002",
+      "receiptNumber": "RCT-2026-0156",
+      "invoiceId": "inv-002",
+      "invoiceNumber": "INV-2026-0121",
+      "customerId": "cust-002",
+      "customerName": "Phase 4 Bread Depot & Wholesale Hub",
+      "marketerId": "mkt-001",
+      "paymentDate": "2026-10-19",
+      "amountPaid": 40000,
+      "paymentMethod": "CASH",
+      "cashierSessionId": "csh-001",
+      "recordedBy": "Blessing Udoh (Cashier)",
+      "idempotencyKey": "IDEMP-CUST002-20261018-40K",
+      "isReversed": false,
+      "createdAt": "2026-10-18T13:10:00Z"
+    }
+  ],
+  "operatingExpenses": [
+    {
+      "id": "exp-001",
+      "voucherNumber": "EXP-2026-0089",
+      "expenseDate": "2026-10-19",
+      "category": "GAS_OVEN_FUEL",
+      "description": "LPG Gas refilling for 3 Rotary Deck Ovens (300kg @ ₦1,250/kg)",
+      "amount": 375000,
+      "beneficiaryName": "TotalEnergies Gas Kubwa",
+      "paymentMethod": "COMPANY_BANK_TRANSFER",
+      "approvedBy": "Engr. Babatunde Lawal (GM)",
+      "receiptAttachmentRef": "RCP-TE-44109",
+      "status": "APPROVED",
+      "createdAt": "2026-10-18T08:30:00Z"
+    },
+    {
+      "id": "exp-002",
+      "voucherNumber": "EXP-2026-0090",
+      "expenseDate": "2026-10-19",
+      "category": "DIESEL_GENERATOR",
+      "description": "Automotive Gas Oil (Diesel) 150 Litres for 100kVA Mikano Backup Generator",
+      "amount": 195000,
+      "beneficiaryName": "NNPC Retail Station Kubwa",
+      "paymentMethod": "COMPANY_BANK_TRANSFER",
+      "approvedBy": "Engr. Babatunde Lawal (GM)",
+      "receiptAttachmentRef": "RCP-NNPC-8120",
+      "status": "APPROVED",
+      "createdAt": "2026-10-18T09:15:00Z"
+    },
+    {
+      "id": "exp-003",
+      "voucherNumber": "EXP-2026-0091",
+      "expenseDate": "2026-10-19",
+      "category": "DAILY_BAKERY_LABOUR",
+      "description": "Daily shift stipends for 6 auxiliary oven loaders and dough molders",
+      "amount": 18000,
+      "beneficiaryName": "Auxiliary Bakery Team",
+      "paymentMethod": "CASH_FLOAT",
+      "approvedBy": "Master Baker Austin Eke",
+      "status": "PAID",
+      "createdAt": "2026-10-18T14:00:00Z"
+    }
+  ],
+  "journalEntries": [
+    {
+      "id": "jrn-001",
+      "entryNumber": "JRN-2026-0045",
+      "date": "2026-10-19",
+      "narration": "Recording Morning Production raw materials consumption against WIP",
+      "sourceModule": "PRODUCTION",
+      "lines": [
+        {
+          "accountCode": "5100",
+          "accountName": "Cost of Goods Sold - Flour & Ingredients",
+          "debitAmount": 760000,
+          "creditAmount": 0
+        },
+        {
+          "accountCode": "1300",
+          "accountName": "Raw Materials Inventory",
+          "debitAmount": 0,
+          "creditAmount": 760000
+        }
+      ],
+      "totalDebit": 760000,
+      "totalCredit": 760000,
+      "postedBy": "Zainab Bello (Accountant)",
+      "createdAt": "2026-10-18T11:00:00Z"
+    },
+    {
+      "id": "jrn-002",
+      "entryNumber": "JRN-2026-0046",
+      "date": "2026-10-19",
+      "narration": "Operating diesel and oven gas fuel expenditure",
+      "sourceModule": "EXPENSE",
+      "lines": [
+        {
+          "accountCode": "6100",
+          "accountName": "Factory Energy & Fuel Expenses",
+          "debitAmount": 570000,
+          "creditAmount": 0
+        },
+        {
+          "accountCode": "1100",
+          "accountName": "GTBank Corporate Operating Account",
+          "debitAmount": 0,
+          "creditAmount": 570000
+        }
+      ],
+      "totalDebit": 570000,
+      "totalCredit": 570000,
+      "postedBy": "Zainab Bello (Accountant)",
+      "createdAt": "2026-10-18T13:30:00Z"
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp-001",
+      "staffCode": "NXT-EMP-001",
+      "fullName": "Austin Eke",
+      "phone": "+234 806 123 4567",
+      "department": "BAKING",
+      "designation": "Production Manager & Master Baker",
+      "shiftPattern": "DAY_OFFICE",
+      "dateEmployed": "2023-01-15",
+      "basicSalaryNaira": 350000,
+      "emergencyContact": "Mrs. Mary Eke (+234 803 999 1111)",
+      "isActive": true
+    },
+    {
+      "id": "emp-002",
+      "staffCode": "NXT-EMP-002",
+      "fullName": "Sani Abdullahi",
+      "phone": "+234 807 456 7890",
+      "department": "BAKING",
+      "designation": "Head Baker (Deck & Rotary Oven)",
+      "shiftPattern": "ROTATING",
+      "dateEmployed": "2023-04-10",
+      "basicSalaryNaira": 180000,
+      "emergencyContact": "Aliyu Abdullahi (+234 802 888 2222)",
+      "isActive": true
+    },
+    {
+      "id": "emp-003",
+      "staffCode": "NXT-EMP-003",
+      "fullName": "Grace Chioma Nwachukwu",
+      "phone": "+234 808 901 2345",
+      "department": "QUALITY",
+      "designation": "Quality Control Lead (Food Science)",
+      "shiftPattern": "DAY_OFFICE",
+      "dateEmployed": "2023-09-01",
+      "basicSalaryNaira": 220000,
+      "emergencyContact": "Chinedu Nwachukwu (+234 805 777 3333)",
+      "isActive": true
+    },
+    {
+      "id": "emp-004",
+      "staffCode": "NXT-EMP-004",
+      "fullName": "Haruna Garba",
+      "phone": "+234 809 345 6789",
+      "department": "BAKING",
+      "designation": "Inventory & Store Controller",
+      "shiftPattern": "DAY_OFFICE",
+      "dateEmployed": "2023-06-01",
+      "basicSalaryNaira": 160000,
+      "emergencyContact": "Ibrahim Garba (+234 806 666 4444)",
+      "isActive": true
+    },
+    {
+      "id": "emp-005",
+      "staffCode": "NXT-EMP-005",
+      "fullName": "Blessing Udoh",
+      "phone": "+234 816 012 3456",
+      "department": "FINANCE",
+      "designation": "Head Cashier & POS Auditor",
+      "shiftPattern": "MORNING",
+      "dateEmployed": "2024-02-01",
+      "basicSalaryNaira": 150000,
+      "emergencyContact": "Ekaette Udoh (+234 807 555 5555)",
+      "isActive": true
+    }
+  ],
+  "attendanceRecords": [
+    {
+      "id": "att-001",
+      "employeeId": "emp-001",
+      "employeeName": "Austin Eke",
+      "department": "BAKING",
+      "date": "2026-10-19",
+      "shift": "Day Shift (Production Oversight)",
+      "timeIn": "05:00",
+      "status": "PRESENT"
+    },
+    {
+      "id": "att-002",
+      "employeeId": "emp-002",
+      "employeeName": "Sani Abdullahi",
+      "department": "BAKING",
+      "date": "2026-10-19",
+      "shift": "Morning Bake (05:00 - 14:00)",
+      "timeIn": "04:50",
+      "status": "PRESENT"
+    },
+    {
+      "id": "att-003",
+      "employeeId": "emp-003",
+      "employeeName": "Grace Chioma Nwachukwu",
+      "department": "QUALITY",
+      "date": "2026-10-19",
+      "shift": "QC Inspection",
+      "timeIn": "06:00",
+      "status": "PRESENT"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "aud-001",
+      "timestamp": "2026-10-18T05:00:00Z",
+      "actorUserId": "usr-admin",
+      "actorUsername": "admin",
+      "actorRole": "SUPER_ADMIN",
+      "action": "CREATE",
+      "entityType": "PRODUCTION_BATCH",
+      "entityId": "po-batch-001",
+      "description": "Scheduled batch NXT-20261018-S1-001 for 1,000 Nextar Family Loaves"
+    },
+    {
+      "id": "aud-002",
+      "timestamp": "2026-10-18T10:00:00Z",
+      "actorUserId": "usr-qc",
+      "actorUsername": "qc.officer",
+      "actorRole": "QC_OFFICER",
+      "action": "QC_RELEASE",
+      "entityType": "PRODUCTION_BATCH",
+      "entityId": "po-batch-001",
+      "description": "Approved and released 982 loaves of Nextar Family Loaf to Dispatch Hall after weight & crumb inspection"
+    },
+    {
+      "id": "aud-003",
+      "timestamp": "2026-10-18T11:45:00Z",
+      "actorUserId": "usr-cashier",
+      "actorUsername": "cashier.morning",
+      "actorRole": "CASHIER",
+      "action": "CREATE",
+      "entityType": "PAYMENT_RECEIPT",
+      "entityId": "pay-001",
+      "description": "Posted ₦125,000 POS payment from Kubwa Grand Supermarket for invoice INV-2026-0120"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-001",
+      "title": "Low Stock Alert: Bread Improver",
+      "message": "Magimix Super Improver is at 145kg. Minimum reorder threshold is 35kg.",
+      "severity": "INFO",
+      "module": "INVENTORY",
+      "timestamp": "2026-10-18T08:00:00Z",
+      "isRead": false
+    },
+    {
+      "id": "notif-002",
+      "title": "Batch Released: Nextar Family Loaf",
+      "message": "Batch NXT-20261018-S1-001 (982 Loaves) passed Quality Control and is ready for dispatch.",
+      "severity": "SUCCESS",
+      "module": "QUALITY",
+      "timestamp": "2026-10-18T10:02:00Z",
+      "isRead": false
+    },
+    {
+      "id": "notif-003",
+      "title": "Credit Limit Monitor",
+      "message": "Phase 4 Bread Depot has ₦340,000 outstanding of ₦1,200,000 credit limit (28.3% used).",
+      "severity": "INFO",
+      "module": "SALES",
+      "timestamp": "2026-10-18T11:30:00Z",
+      "isRead": true
+    }
+  ]
+}

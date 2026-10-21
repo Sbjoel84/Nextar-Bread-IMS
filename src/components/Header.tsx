@@ -12,13 +12,21 @@ import {
   AlertTriangle,
   Info,
   Building2,
+  LogOut,
+  Undo2,
+  Eye,
 } from 'lucide-react';
 import { formatDateTimeNG } from '../utils/formatters';
+import { ROLE_LABELS } from '../shared/permissions';
 
 interface HeaderProps {
   currentUser: User | null;
+  realUser: User | null; // who is at the device; differs while a Super Admin views as someone else
   allUsers: User[];
+  canSwitchUsers: boolean; // Super Admin only
+  canResetDatabase: boolean;
   onSwitchUser: (userId: string) => void;
+  onReleaseDevice: () => void;
   notifications: SystemNotification[];
   onMarkNotificationsRead: () => void;
   onResetDatabase: () => void;
@@ -26,8 +34,12 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   currentUser,
+  realUser,
   allUsers,
+  canSwitchUsers,
+  canResetDatabase,
   onSwitchUser,
+  onReleaseDevice,
   notifications,
   onMarkNotificationsRead,
   onResetDatabase,
@@ -55,8 +67,25 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
+  const impersonating = Boolean(realUser && currentUser && realUser.id !== currentUser.id);
 
   return (
+    <>
+    {impersonating && (
+      <div className="shrink-0 bg-amber-500 text-slate-950 text-xs font-semibold px-4 py-1.5 flex items-center justify-center gap-3">
+        <Eye className="w-3.5 h-3.5" />
+        <span>
+          You ({realUser?.fullName}) are viewing the system as {currentUser?.fullName} ({currentUser ? ROLE_LABELS[currentUser.role] : ''}).
+          Everything you do is recorded as both of you.
+        </span>
+        <button
+          onClick={() => realUser && onSwitchUser(realUser.id)}
+          className="flex items-center gap-1 bg-slate-950 text-amber-300 hover:text-white rounded px-2 py-0.5"
+        >
+          <Undo2 className="w-3 h-3" /> Return to my account
+        </button>
+      </div>
+    )}
     <header className="shrink-0 h-14 sticky top-0 z-40 w-full bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 flex items-center justify-between shadow-md">
       {/* Brand & Subtitle */}
       <div className="flex items-center gap-4">
@@ -79,7 +108,8 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right: Actions, Notifications, Role Switcher */}
       <div className="flex items-center gap-3">
-        {/* Reset Demo Data button */}
+        {/* Reset Demo Data button (Super Admin only) */}
+        {canResetDatabase && (
         <button
           onClick={() => {
             if (confirm('Reset Nextar Bakery database to fresh initial seed data?')) {
@@ -92,6 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
           <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
           <span>Reset Demo</span>
         </button>
+        )}
 
         {/* Notifications Button & Dropdown */}
         <div className="relative">
@@ -165,7 +196,8 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Current User & Role Switcher */}
         <div className="relative">
           <button
-            onClick={() => setShowRoleModal(!showRoleModal)}
+            onClick={() => canSwitchUsers && setShowRoleModal(!showRoleModal)}
+            title={canSwitchUsers ? 'Switch user (Super Admin)' : 'This device is assigned to you'}
             className="flex items-center gap-2.5 bg-gradient-to-r from-blue-950/60 to-slate-800/90 hover:from-blue-900/70 hover:to-slate-700/90 border border-blue-500/30 rounded-xl px-3 py-1.5 transition-all shadow-sm"
           >
             <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-inner">
@@ -177,22 +209,22 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
               <div className="text-[10px] font-medium text-blue-400 flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3 text-cyan-400" />
-                {currentUser?.role.replace(/_/g, ' ') || 'Admin'}
+                {currentUser ? ROLE_LABELS[currentUser.role] : ''}
               </div>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            {canSwitchUsers && <ChevronDown className="w-3.5 h-3.5 text-slate-400" />}
           </button>
 
           {/* Quick Role Switcher Modal */}
-          {showRoleModal && (
+          {canSwitchUsers && showRoleModal && (
             <div className="absolute right-0 mt-2 w-80 rounded-xl bg-slate-900 border border-slate-700 shadow-2xl p-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="px-2 py-1.5 mb-1.5 border-b border-slate-800">
                 <div className="text-xs font-bold text-white flex items-center gap-1.5">
                   <UserCheck className="w-4 h-4 text-blue-400" />
-                  Test Any of the 14 User Roles
+                  View the system as another user
                 </div>
                 <div className="text-[11px] text-slate-400">
-                  Switch user to test exact permissions & workflows
+                  Super Admin only. Use it to check what each person can see and do.
                 </div>
               </div>
 
@@ -216,19 +248,30 @@ export const Header: React.FC<HeaderProps> = ({
                         <div className="font-semibold text-slate-100 flex items-center gap-1.5">
                           {u.fullName}
                           {isCurrent && <span className="text-[10px] bg-blue-500 text-white px-1.5 py-0.2 rounded">Active</span>}
+                        {u.id === realUser?.id && <span className="text-[10px] bg-slate-700 text-slate-200 px-1.5 py-0.2 rounded">You</span>}
                         </div>
                         <div className="text-[10px] text-blue-400 font-mono">
-                          {u.role.replace(/_/g, ' ')}
+                          {ROLE_LABELS[u.role]}
                         </div>
                       </div>
                     </button>
                   );
                 })}
               </div>
+              <button
+                onClick={() => {
+                  setShowRoleModal(false);
+                  if (confirm('Release this device? It will ask which account to use next time it is opened.')) onReleaseDevice();
+                }}
+                className="mt-2 w-full flex items-center justify-center gap-1.5 text-xs text-rose-300 hover:text-white hover:bg-rose-900/40 border border-rose-900/60 rounded-lg py-1.5"
+              >
+                <LogOut className="w-3.5 h-3.5" /> Release this device
+              </button>
             </div>
           )}
         </div>
       </div>
     </header>
+    </>
   );
 };

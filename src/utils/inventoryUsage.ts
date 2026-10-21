@@ -12,7 +12,7 @@ export interface MaterialUsageAnalysis {
   totalQuantityConsumed: number;
   todayQuantityConsumed: number;
   avgDailyBurnRate: number;
-  daysOfSupplyRemaining: number;
+  daysOfSupplyRemaining: number | null; // null when there is no usage history to estimate from
   isBelowThreshold: boolean;
   urgency: 'CRITICAL' | 'WARNING' | 'HEALTHY';
   shortfallUnits: number;
@@ -46,6 +46,10 @@ export function calculateRawMaterialUsage(
     // 1. Calculate consumption from Production Orders
     let totalFromBatches = 0;
     let todayFromBatches = 0;
+    let firstUsageDate: string | null = null;
+    const noteUsageDate = (date: string) => {
+      if (!firstUsageDate || date < firstUsageDate) firstUsageDate = date;
+    };
 
     for (const batch of productionOrders) {
       if (batch.ingredientsIssued) {
@@ -53,6 +57,7 @@ export function calculateRawMaterialUsage(
           if (ing.rawMaterialId === mat.id) {
             const qty = ing.actualQty || ing.plannedQty || 0;
             totalFromBatches += qty;
+            if (qty > 0) noteUsageDate((batch.scheduledDate || batch.createdAt).slice(0, 10));
             if (batch.scheduledDate === todayStr || batch.createdAt.startsWith(todayStr)) {
               todayFromBatches += qty;
             }
@@ -69,6 +74,7 @@ export function calculateRawMaterialUsage(
       if (mov.rawMaterialId === mat.id && mov.movementType === 'ISSUE_TO_PRODUCTION') {
         const consumed = Math.abs(mov.quantityDelta);
         totalFromLedger += consumed;
+        if (consumed > 0) noteUsageDate(mov.timestamp.slice(0, 10));
         if (mov.timestamp.startsWith(todayStr)) {
           todayFromLedger += consumed;
         }
@@ -78,11 +84,16 @@ export function calculateRawMaterialUsage(
     const totalConsumed = Math.max(totalFromBatches, totalFromLedger);
     const todayConsumed = Math.max(todayFromBatches, todayFromLedger);
 
-    // Estimate daily burn rate (use today's usage if > 0, otherwise average based on historical consumption)
-    const avgDailyBurnRate = todayConsumed > 0 ? todayConsumed : (totalConsumed > 0 ? Math.round((totalConsumed / 3) * 10) / 10 : 10);
+    // Average daily burn rate over the real usage period (first recorded usage → today, inclusive).
+    // No usage recorded yet → no burn rate and no stock-out estimate.
+    let avgDailyBurnRate = 0;
+    if (totalConsumed > 0 && firstUsageDate) {
+      const daysInPeriod = Math.max(1, Math.round((Date.parse(todayStr) - Date.parse(firstUsageDate)) / 86400000) + 1);
+      avgDailyBurnRate = Math.round((totalConsumed / daysInPeriod) * 10) / 10;
+    }
 
-    // Days of supply remaining before stockout
-    const daysOfSupply = avgDailyBurnRate > 0 ? Math.round((mat.currentStock / avgDailyBurnRate) * 10) / 10 : 99;
+    // Days of supply remaining before stockout (null = unknown, no usage history)
+    const daysOfSupply = avgDailyBurnRate > 0 ? Math.round((mat.currentStock / avgDailyBurnRate) * 10) / 10 : null;
 
     // Threshold calculation: configured settings threshold or material's minimum alert
     const configuredThreshold = mat.minimumStockAlert;
@@ -91,7 +102,7 @@ export function calculateRawMaterialUsage(
     const isBelowThreshold = mat.currentStock <= effectiveReorderThreshold;
 
     let urgency: 'CRITICAL' | 'WARNING' | 'HEALTHY' = 'HEALTHY';
-    if (mat.currentStock <= effectiveReorderThreshold * 0.5 || daysOfSupply <= 2) {
+    if (mat.currentStock <= effectiveReorderThreshold * 0.5 || (daysOfSupply !== null && daysOfSupply <= 2)) {
       urgency = 'CRITICAL';
     } else if (isBelowThreshold) {
       urgency = 'WARNING';
@@ -128,7 +139,7 @@ export function calculateRawMaterialUsage(
 
   let summaryText = 'All raw material ingredients are safely above reorder thresholds.';
   if (criticalMaterials.length > 0) {
-    summaryText = `CRITICAL ALERT: ${criticalMaterials.map(m => `${m.name} (${m.currentStock} ${m.unit} left, ~${m.daysOfSupplyRemaining} days)`).join('; ')} require immediate procurement!`;
+    summaryText = `CRITICAL ALERT: ${criticalMaterials.map(m => `${m.name} (${m.currentStock} ${m.unit} left${m.daysOfSupplyRemaining !== null ? `, ~${m.daysOfSupplyRemaining} days` : ''})`).join('; ')} require immediate procurement!`;
   } else if (warningMaterials.length > 0) {
     summaryText = `REORDER WARNING: ${warningMaterials.length} ingredient(s) are nearing reorder threshold.`;
   }
